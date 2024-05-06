@@ -1,10 +1,16 @@
-﻿// using lab05.Repositories;
+// using lab05.Repositories;
 // using lab05.Services;
 // using lab05.Controllers;
 using Microsoft.EntityFrameworkCore;
 using ET.DataAccess.Persistence;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("DatabaseContextConnection") ?? throw new InvalidOperationException("Connection string 'DatabaseContextConnection' not found.");
+
+builder.Services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(connectionString));
+
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<DatabaseContext>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
