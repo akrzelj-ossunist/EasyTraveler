@@ -8,6 +8,7 @@ using ET.Application.Models.Validators;
 using ET.DataAccess;
 using ET.DataAccess.Persistence;
 using Microsoft.EntityFrameworkCore;
+using ET.Application.Mappers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,7 @@ var configuration = builder.Configuration;
 
 builder.Services.AddDbContext<DatabaseContext>(options =>
     options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+
 
 builder.Services.AddControllers(
     config => config.Filters.Add(typeof(ValidateModelAttribute))
@@ -31,6 +33,9 @@ builder.Services.AddDataAccess(builder.Configuration)
 builder.Services.AddJwt(builder.Configuration);
 
 builder.Services.AddEmailConfiguration(builder.Configuration);
+
+builder.Services.AddScoped<UserMapper> ();
+builder.Services.AddScoped<DatabaseContext> ();
 
 var app = builder.Build();
 

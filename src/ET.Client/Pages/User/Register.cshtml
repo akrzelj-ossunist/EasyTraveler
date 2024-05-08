@@ -1,0 +1,51 @@
+﻿@page
+@model ET.Client.Pages.User.RegisterModel
+@{
+	ViewData["Title"] = "Register";
+}
+
+<div class="container mt-4">
+	<h1>User Register</h1>
+	<form method="post" onsubmit="return validatePassword();">
+		<div class="form-group p-2">
+			<label for="FirstName">First Name</label>
+			<input type="text" class="form-control" id="FirstName" name="FirstName" placeholder="Enter your first name" required>
+		</div>
+		<div class="form-group p-2">
+			<label for="LastName">Last Name</label>
+			<input type="text" class="form-control" id="LastName" name="LastName" placeholder="Enter your last name" required>
+		</div>
+		<div class="form-group p-2">
+			<label for="Email">Email address</label>
+			<input type="email" class="form-control" id="Email" name="Email" aria-describedby="emailHelp" placeholder="Enter your email" required>
+			<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+		</div>
+		<div class="form-group p-2">
+			<label for="Password">Password</label>
+			<input type="password" class="form-control" id="Password" name="Password" placeholder="Password" required>
+		</div>
+		<div class="form-group p-2">
+			<label for="PasswordRepeat">Repeat Password</label>
+			<input type="password" class="form-control" id="PasswordRepeat" name="PasswordRepeat" placeholder="Repeat your password" required>
+			<div id="passwordError" class="text-danger"></div>
+		</div>
+		<button type="submit" class="btn btn-primary m-2">Register</button>
+	</form>
+</div>
+
+
+<script>
+	function validatePassword() {
+		var password = document.getElementById("Password").value;
+		var confirmPassword = document.getElementById("PasswordRepeat").value;
+
+		if (password != confirmPassword) {
+			document.getElementById("passwordError").innerText = "Passwords do not match";
+			return false;
+		}
+		else {
+			document.getElementById("passwordError").innerText = "";
+			return true;
+		}
+	}
+</script>

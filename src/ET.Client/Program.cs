@@ -1,12 +1,17 @@
-// using lab05.Repositories;
+﻿// using lab05.Repositories;
 // using lab05.Services;
 // using lab05.Controllers;
 using Microsoft.EntityFrameworkCore;
 using ET.DataAccess.Persistence;
 using Microsoft.AspNetCore.Identity;
+using ET.Application.Services;
+using ET.Application.Services.Impl;
+using ET.DataAccess.Repositories.Impl;
+using ET.DataAccess.Repositories;
+using ET.Application.Mappers;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("DatabaseContextConnection") ?? throw new InvalidOperationException("Connection string 'DatabaseContextConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(connectionString));
 
@@ -15,10 +20,15 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-// builder.Services.AddScoped<PatientController>();
-// builder.Services.AddScoped<PatientService>();
-// builder.Services.AddScoped<PatientRepository>();
-// builder.Services.AddScoped<HospitalRepository>();
+/* SERVICES DEPENDENCY INJECTION */
+builder.Services.AddScoped<ET.Application.Services.UserService, UserServiceImpl>();
+
+/* MAPPER */
+builder.Services.AddScoped<UserMapper>();
+builder.Services.AddScoped<DatabaseContext>();
+
+/* REPOSITORIES DEPENDENCY INJECTION */
+builder.Services.AddScoped<UserRepository, UserRepositoryImpl>();
 
 var app = builder.Build();
 
