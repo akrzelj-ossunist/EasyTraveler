@@ -1,21 +1,16 @@
-﻿// using lab05.Repositories;
-// using lab05.Services;
-// using lab05.Controllers;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ET.DataAccess.Persistence;
-using Microsoft.AspNetCore.Identity;
 using ET.Application.Services;
 using ET.Application.Services.Impl;
 using ET.DataAccess.Repositories.Impl;
 using ET.DataAccess.Repositories;
 using ET.Application.Mappers;
+using ET.Application.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(connectionString));
-
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<DatabaseContext>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -23,12 +18,22 @@ builder.Services.AddRazorPages();
 /* SERVICES DEPENDENCY INJECTION */
 builder.Services.AddScoped<ET.Application.Services.UserService, UserServiceImpl>();
 
-/* MAPPER */
+/* MAPPER DEPENDENCY INJECTION */
 builder.Services.AddScoped<UserMapper>();
+
+/* DATABASE CONTEXT DEPENDENCY INJECTION  */
 builder.Services.AddScoped<DatabaseContext>();
+
+/* JWT TOKEN DEPENDENCY INJECTION */
+builder.Services.AddScoped<JwtService>();
 
 /* REPOSITORIES DEPENDENCY INJECTION */
 builder.Services.AddScoped<UserRepository, UserRepositoryImpl>();
+
+/* IHTTPCONTEXTACCESSOR DEPENDENCY INJECTION */
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddSession();
 
 var app = builder.Build();
 
@@ -44,6 +49,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthorization();
 

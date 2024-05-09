@@ -1,29 +1,34 @@
 ﻿using ET.Application.Models.UserDtos.Response;
 using ET.Application.Models.UserDtos;
 using ET.Application.Exceptions;
-using ET.Core.Entities;
 using ET.DataAccess.Repositories;
 using ET.Application.Mappers;
+using ET.Application.Utilities;
+using Microsoft.AspNetCore.Http;
 
 namespace ET.Application.Services.Impl
 {
-    public class UserServiceImpl : Services.UserService
+    public class UserServiceImpl : UserService
     {
         private readonly UserRepository _userRepository;
         private readonly UserMapper _userMapper;
+        private readonly JwtService _jwtService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserServiceImpl(UserRepository userRepository, UserMapper userMapper)
+        public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, JwtService jwtService, IHttpContextAccessor httpContextAccessor)
         {
             _userRepository = userRepository;
             _userMapper = userMapper;
+            _jwtService = jwtService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public UserResponseDto UserDelete(int id)
+        public UserResponseDto UserDelete(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public UserResponseDto UserEdit(int id, UserRegisterDto userRegisterDto)
+        public UserResponseDto UserEdit(Guid id, UserRegisterDto userRegisterDto)
         {
             throw new NotImplementedException();
         }
@@ -38,9 +43,26 @@ namespace ET.Application.Services.Impl
             throw new NotImplementedException();
         }
 
-        public UserResponseDto UserLogin(UserLoginDto userLoginDto)
+        public LoginResponseDto UserLogin(UserLoginDto userLoginDto)
         {
-            throw new NotImplementedException();
+            if (userLoginDto == null) throw new InvalidArgumentsException("Sent user login data cannot be null!");
+
+            var user = _userRepository.FindByEmail(userLoginDto.Email);
+            if (user == null) throw new AlreadyExistsException("User with this email doesn't exist!");
+
+            //if (BCrypt.Net.BCrypt.HashPassword(userLoginDto.Password) != user.Password) throw new PasswordMissmatchException("Password used for login is invalid!");
+
+            string jwtToken = _jwtService.GenerateJwtToken(user.Role.ToString(), user.Id.ToString());
+
+            _httpContextAccessor.HttpContext.Session.SetString("_JwtToken", jwtToken);
+
+            var response = new LoginResponseDto
+            {
+                JwtToken = jwtToken,
+                UserResponseDto = _userMapper.UserToUserDto(user)
+            };
+
+            return response;
         }
 
         public UserResponseDto UserRegister(UserRegisterDto userRegisterDto)
@@ -52,12 +74,14 @@ namespace ET.Application.Services.Impl
             var user = _userRepository.FindByEmail(userRegisterDto.Email);
             if (user != null) throw new AlreadyExistsException("User with this email already exists!");
 
-            var newUser = _userRepository.Save(user);
+            userRegisterDto.Password = BCrypt.Net.BCrypt.HashPassword(userRegisterDto.Password);
+
+            var newUser = _userRepository.Save(_userMapper.UserDtoToUser(userRegisterDto));
 
             return _userMapper.UserToUserDto(newUser);
         }
 
-        public bool UserUpdatePassword(int id, PasswordChangeDto passwordChangeDto)
+        public bool UserUpdatePassword(Guid id, PasswordChangeDto passwordChangeDto)
         {
             throw new NotImplementedException();
         }

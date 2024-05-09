@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -20,7 +23,18 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
 					<div class="navbar-collapse">
 						<ul class="navbar-nav flex-grow-1">
-
+							@if (!string.IsNullOrEmpty(HttpContextAccessor.HttpContext.Session.GetString("_JwtToken")))
+							{
+								<li class="nav-item">
+									<a class="nav-link text-dark" asp-area="" asp-page="/User/Logout">Logout</a>
+								</li>
+							}
+							else
+							{
+								<li class="nav-item">
+									<a class="nav-link text-dark" asp-area="" asp-page="/User/Login">Login</a>
+								</li>
+							}
 						</ul>
 					</div>
                 </div>

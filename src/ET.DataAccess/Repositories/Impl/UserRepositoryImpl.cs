@@ -25,7 +25,7 @@ namespace ET.DataAccess.Repositories.Impl
             return _context.User.FirstOrDefault(user => user.Email == email);
         }
 
-        public User FindById(int id)
+        public User FindById(Guid id)
         {
             return _context.User.FirstOrDefault(user => user.Id == id);
         }

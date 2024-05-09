@@ -8,7 +8,7 @@ namespace ET.Core.Entities
 {
     public class Ticket
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public int Price { get; set; }
         public DateOnly BoughtDate { get; set; }
         public Bus Bus { get; set; }

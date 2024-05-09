@@ -1,14 +1,13 @@
-﻿using FluentValidation;
-using FluentValidation.AspNetCore;
+﻿using FluentValidation.AspNetCore;
 using ET.API;
 using ET.API.Filters;
 using ET.API.Middleware;
 using ET.Application;
-using ET.Application.Models.Validators;
 using ET.DataAccess;
 using ET.DataAccess.Persistence;
 using Microsoft.EntityFrameworkCore;
 using ET.Application.Mappers;
+using ET.Application.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +22,6 @@ builder.Services.AddControllers(
 );
 
 builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblyContaining(typeof(IValidationsMarker));
 
 builder.Services.AddSwagger();
 
@@ -32,16 +30,15 @@ builder.Services.AddDataAccess(builder.Configuration)
 
 builder.Services.AddJwt(builder.Configuration);
 
-builder.Services.AddEmailConfiguration(builder.Configuration);
-
+builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<UserMapper> ();
 builder.Services.AddScoped<DatabaseContext> ();
+
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
 using var scope = app.Services.CreateScope();
-
-await AutomatedMigration.MigrateAsync(scope.ServiceProvider);
 
 app.UseSwagger();
 app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "ET V1"); });

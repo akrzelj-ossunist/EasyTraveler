@@ -13,7 +13,7 @@ namespace ET.DataAccess.Repositories
 
         public User Update(User user);
 
-        public User FindById(int id);
+        public User FindById(Guid id);
 
         public User FindByEmail(string email);
     }

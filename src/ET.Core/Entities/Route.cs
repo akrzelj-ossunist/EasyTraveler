@@ -8,7 +8,7 @@ namespace ET.Core.Entities
 {
     public class Route
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string StartLocation { get; set; }
         public string EndLocation { get; set; }
         public DateOnly StartDate { get; set; }

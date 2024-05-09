@@ -8,7 +8,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.10" />
+        <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.10">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -17,9 +19,14 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.5.1" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\ET.Application\ET.Application.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Controllers\" />
     </ItemGroup>
 </Project>

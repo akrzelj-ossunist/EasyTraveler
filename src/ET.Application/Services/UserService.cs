@@ -12,15 +12,15 @@ public interface UserService
 {
     public UserResponseDto UserRegister(UserRegisterDto userRegisterDto);
 
-    public UserResponseDto UserLogin(UserLoginDto userLoginDto);
+    public LoginResponseDto UserLogin(UserLoginDto userLoginDto);
 
     public bool UserValidation();
 
-    public bool UserUpdatePassword(int id, PasswordChangeDto passwordChangeDto);
+    public bool UserUpdatePassword(Guid id, PasswordChangeDto passwordChangeDto);
 
-    public UserResponseDto UserEdit(int id, UserRegisterDto userRegisterDto);
+    public UserResponseDto UserEdit(Guid id, UserRegisterDto userRegisterDto);
 
-    public UserResponseDto UserDelete(int id);
+    public UserResponseDto UserDelete(Guid id);
 
     public List<UserResponseDto> UserList();
 

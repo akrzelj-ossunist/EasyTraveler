@@ -2,31 +2,35 @@
 using ET.Application.Models.UserDtos.Response;
 using ET.Application.Models.UserDtos;
 using ET.Core.Entities;
-namespace ET.Application.Mappers;
+using ET.Core.Entities.Enums;
 
-public class UserMapper
+namespace ET.Application.Mappers
 {
-    private readonly IMapper _mapper;
-
-    public UserMapper()
+    public class UserMapper
     {
-        var config = new MapperConfiguration(cfg =>
+        private readonly IMapper _mapper;
+
+        public UserMapper()
         {
-            cfg.CreateMap<UserRegisterDto, User>();
-            cfg.CreateMap<User, UserResponseDto>();
-        });
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<UserRegisterDto, User>()
+                   .ForMember(dest => dest.Role, opt => opt.MapFrom(src => UserRole.User)); // Set default role to UserRole.User
+                cfg.CreateMap<User, UserResponseDto>();
+            });
 
-        _mapper = config.CreateMapper();
-    }
+            _mapper = config.CreateMapper();
+        }
 
-    public User UserDtoToUser(UserRegisterDto userRegisterDto)
-    {
-        return _mapper.Map<User>(userRegisterDto);
-    }
+        public User UserDtoToUser(UserRegisterDto userRegisterDto)
+        {
+            return _mapper.Map<User>(userRegisterDto);
+        }
 
-    public UserResponseDto UserToUserDto(User user)
-    {
-        return _mapper.Map<UserResponseDto>(user);
+        public UserResponseDto UserToUserDto(User user)
+        {
+            return _mapper.Map<UserResponseDto>(user);
+        }
     }
 }
 

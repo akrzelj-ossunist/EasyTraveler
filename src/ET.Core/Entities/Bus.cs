@@ -8,7 +8,7 @@ namespace ET.Core.Entities
 {
     public class Bus
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string Seats { get; set; }
         public Company Company { get; set; }
         public Route Route { get; set; }

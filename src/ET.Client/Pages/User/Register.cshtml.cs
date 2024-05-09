@@ -23,12 +23,10 @@ namespace ET.Client.Pages.User
 
         public IActionResult OnPost()
         {
-            // Handle form submission
             if (ModelState.IsValid)
             {
                 _userService.UserRegister(RegisterDto);
-
-                return RedirectToPage("/User/Register");
+                return RedirectToPage("/User/Login");
             }
             else
             {
