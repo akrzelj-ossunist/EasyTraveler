@@ -41,7 +41,7 @@ namespace ET.Application.Utilities
                 Subject = new System.Security.Claims.ClaimsIdentity(new[]
                 {
                 new System.Security.Claims.Claim("role", role),
-                new System.Security.Claims.Claim("userId", userId)
+                new System.Security.Claims.Claim("id", userId)
             }),
                 Expires = DateTime.UtcNow.AddDays(7), // Token expiration time
                 Issuer = "EasyTraveler",

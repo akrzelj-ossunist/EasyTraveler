@@ -32,7 +32,8 @@ builder.Services.AddJwt(builder.Configuration);
 
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<UserMapper> ();
-builder.Services.AddScoped<DatabaseContext> ();
+builder.Services.AddScoped<DatabaseContext>();
+builder.Services.AddScoped<AuthenticateUser>();
 
 builder.Services.AddHttpContextAccessor();
 

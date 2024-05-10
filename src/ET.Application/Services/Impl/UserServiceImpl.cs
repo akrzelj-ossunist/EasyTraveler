@@ -5,6 +5,7 @@ using ET.DataAccess.Repositories;
 using ET.Application.Mappers;
 using ET.Application.Utilities;
 using Microsoft.AspNetCore.Http;
+using ET.Application.Models;
 
 namespace ET.Application.Services.Impl
 {
@@ -23,34 +24,39 @@ namespace ET.Application.Services.Impl
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public UserResponseDto UserDelete(Guid id)
+        public bool UserDelete(Guid id)
         {
-            throw new NotImplementedException();
+            var user = _userRepository.FindById(id);
+            if (user == null) throw new NotFoundException("User with sent id doesnt exist!");
+
+            _httpContextAccessor.HttpContext.Session.Remove("_JwtToken");
+
+            return _userRepository.Delete(user);
         }
 
         public UserResponseDto UserEdit(Guid id, UserRegisterDto userRegisterDto)
         {
-            throw new NotImplementedException();
+            if (userRegisterDto == null) throw new InvalidArgumentsException("Sent user register data cannot be null!");
+
+            var user = _userRepository.FindById(id);
+            if (user == null) throw new NotFoundException("User with sent id doesnt exist!");
+
+            user.FirstName = userRegisterDto.FirstName;
+            user.LastName = userRegisterDto.LastName;
+
+            var editedUser = _userRepository.Update(user);
+
+            return _userMapper.UserToUserDto(editedUser);
         }
 
-        public List<UserResponseDto> UserFilterList(Dictionary<string, string> filters)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<UserResponseDto> UserList()
-        {
-            throw new NotImplementedException();
-        }
-
-        public LoginResponseDto UserLogin(UserLoginDto userLoginDto)
+        public LoginResponseDto UserLogin(LoginDto userLoginDto)
         {
             if (userLoginDto == null) throw new InvalidArgumentsException("Sent user login data cannot be null!");
 
             var user = _userRepository.FindByEmail(userLoginDto.Email);
             if (user == null) throw new AlreadyExistsException("User with this email doesn't exist!");
 
-            //if (BCrypt.Net.BCrypt.HashPassword(userLoginDto.Password) != user.Password) throw new PasswordMissmatchException("Password used for login is invalid!");
+            if (!BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.Password)) throw new PasswordMissmatchException("Password used for login is invalid!");
 
             string jwtToken = _jwtService.GenerateJwtToken(user.Role.ToString(), user.Id.ToString());
 
@@ -83,12 +89,40 @@ namespace ET.Application.Services.Impl
 
         public bool UserUpdatePassword(Guid id, PasswordChangeDto passwordChangeDto)
         {
-            throw new NotImplementedException();
+            if (passwordChangeDto == null) throw new InvalidArgumentsException("Sent user register data cannot be null!");
+
+            var user = _userRepository.FindById(id);
+            if (user == null) throw new NotFoundException("User with sent id doesnt exist!");
+
+            if (passwordChangeDto.NewPassword != passwordChangeDto.NewPasswordRepeat) throw new PasswordMissmatchException("Sent passwords doesnt match!");
+
+            if(!BCrypt.Net.BCrypt.Verify(passwordChangeDto.CurrentPassword, user.Password)) return false;
+
+            user.Password = BCrypt.Net.BCrypt.HashPassword(passwordChangeDto.NewPassword);
+
+            var newUser = _userRepository.Update(user);
+
+            return true;
         }
 
-        public bool UserValidation()
+        public UserResponseDto FindUserById(Guid id)
+        {
+            var user = _userRepository.FindById(id);
+
+            if (user == null) throw new NotFoundException("User with sent id doesnt exist!");
+
+            return _userMapper.UserToUserDto(user);
+        }
+
+        public List<UserResponseDto> UserList()
         {
             throw new NotImplementedException();
         }
+
+        public List<UserResponseDto> UserFilterList(Dictionary<string, string> filters)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ET.Application.Models.UserDtos
+namespace ET.Application.Models
 {
     public class PasswordChangeDto
     {

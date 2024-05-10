@@ -1,4 +1,4 @@
-﻿using ET.Application.Models.UserDtos;
+﻿using ET.Application.Models;
 using ET.Application.Models.UserDtos.Response;
 using ET.Application.Services;
 using ET.Application.Utilities;
@@ -20,7 +20,7 @@ namespace ET.Client.Pages.User
         }
 
         [BindProperty]
-        public UserLoginDto LoginDto { get; set; }
+        public LoginDto LoginDto { get; set; }
 
         public LoginResponseDto LoginResponseDto { get; set; }
 

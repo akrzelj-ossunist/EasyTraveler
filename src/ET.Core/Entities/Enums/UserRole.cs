@@ -9,6 +9,7 @@ namespace ET.Core.Entities.Enums
     public enum UserRole
     {
         Admin,
-        User
+        User,
+        Company
     }
 }

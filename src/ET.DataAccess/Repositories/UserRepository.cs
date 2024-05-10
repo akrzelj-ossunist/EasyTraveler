@@ -16,5 +16,7 @@ namespace ET.DataAccess.Repositories
         public User FindById(Guid id);
 
         public User FindByEmail(string email);
+
+        public bool Delete(User user);
     }
 }

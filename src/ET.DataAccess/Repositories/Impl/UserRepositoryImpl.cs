@@ -1,5 +1,6 @@
 ﻿using ET.Core.Entities;
 using ET.DataAccess.Persistence;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +48,14 @@ namespace ET.DataAccess.Repositories.Impl
             _context.SaveChanges();
             
             return user;
+        }
+
+        public bool Delete(User user)
+        {
+            _context.User.Remove(user);
+            _context.SaveChanges();
+
+            return true;
         }
     }
 }

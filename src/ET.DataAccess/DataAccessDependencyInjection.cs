@@ -21,6 +21,7 @@ public static class DataAccessDependencyInjection
 
     private static void AddRepositories(this IServiceCollection services)
     {
+        services.AddScoped<CompanyRepository, CompanyRepositoryImpl>();
         services.AddScoped<UserRepository, UserRepositoryImpl>();
     }
 

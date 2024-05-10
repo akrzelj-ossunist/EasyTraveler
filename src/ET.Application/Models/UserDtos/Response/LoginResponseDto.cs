@@ -10,5 +10,6 @@ namespace ET.Application.Models.UserDtos.Response
     {
         public string JwtToken { get; set; }
         public UserResponseDto UserResponseDto { get; set; }
+        public bool IsSuccess { get; set; } = false;
     }
 }

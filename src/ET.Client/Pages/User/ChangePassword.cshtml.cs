@@ -1,4 +1,7 @@
-﻿using ET.Application.Models.UserDtos;
+﻿using ET.Application.Models;
+using ET.Application.Models.UserDtos.Response;
+using ET.Application.Services;
+using ET.Application.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
@@ -7,49 +10,40 @@ namespace ET.Client.Pages.User
 {
     public class ChangePasswordModel : PageModel
     {
+
+        private readonly AuthenticateUser _authenticateUser;
+        public readonly UserService _userService;
+        public required AuthenticatedDto AuthenticatedDto { get; set; }
         [BindProperty]
         public PasswordChangeDto ChangePasswordDto { get; set; }
+        [BindProperty]
+        public bool IsPasswordChanged { get; set; }
+
+        public ChangePasswordModel(AuthenticateUser authenticateUser, UserService userService)
+        {
+            _authenticateUser = authenticateUser;
+            _userService = userService;
+        }
 
         public IActionResult OnGet()
         {
-            return Page();
+            IsPasswordChanged = true;
+            AuthenticatedDto = _authenticateUser.CreateAuthentication();
+
+            return AuthenticatedDto.IsAuthenticated ? Page() : RedirectToPage("/User/Login");
         }
 
         public IActionResult OnPost()
         {
             if (ModelState.IsValid)
             {
-                // Check if the new passwords match
-                if (ChangePasswordDto.NewPassword != ChangePasswordDto.NewPasswordRepeat)
-                {
-                    ModelState.AddModelError("ChangePasswordDto.ConfirmNewPassword", "The new passwords do not match.");
-                    return Page();
-                }
+                AuthenticatedDto = _authenticateUser.CreateAuthentication();
+                bool IsPasswordChanged = _userService.UserUpdatePassword(AuthenticatedDto.Id, ChangePasswordDto);
 
-                // Check if the current password is correct (example implementation)
-                if (!IsCurrentPasswordCorrect(ChangePasswordDto.CurrentPassword))
-                {
-                    ModelState.AddModelError("ChangePasswordDto.CurrentPassword", "Incorrect current password.");
-                    return Page();
-                }
-
-                // Password change logic (example implementation)
-                // Update the password in the database, or perform other necessary actions
-
-                // Redirect the user to a success page or home page
-                return RedirectToPage("/Index");
+                return IsPasswordChanged ? RedirectToPage("/User/Profile") : Page();
             }
 
-            // If the model state is not valid, return the page with validation errors
-            return Page();
-        }
-
-        // Example method to check if the current password is correct
-        private bool IsCurrentPasswordCorrect(string currentPassword)
-        {
-            // Replace this with your actual logic to check if the current password matches the user's actual current password
-            // For demonstration purposes, assume it always returns true
-            return true;
+            else return Page();
         }
     }
 }

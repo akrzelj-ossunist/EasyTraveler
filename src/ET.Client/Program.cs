@@ -15,9 +15,6 @@ builder.Services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(conn
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-/* SERVICES DEPENDENCY INJECTION */
-builder.Services.AddScoped<ET.Application.Services.UserService, UserServiceImpl>();
-
 /* MAPPER DEPENDENCY INJECTION */
 builder.Services.AddScoped<UserMapper>();
 
@@ -27,11 +24,19 @@ builder.Services.AddScoped<DatabaseContext>();
 /* JWT TOKEN DEPENDENCY INJECTION */
 builder.Services.AddScoped<JwtService>();
 
+/* SERVICES DEPENDENCY INJECTION */
+builder.Services.AddScoped<UserService, UserServiceImpl>();
+builder.Services.AddScoped<CompanyService, CompanyServiceImpl>();
+
 /* REPOSITORIES DEPENDENCY INJECTION */
 builder.Services.AddScoped<UserRepository, UserRepositoryImpl>();
+builder.Services.AddScoped<CompanyRepository, CompanyRepositoryImpl>();
 
-/* IHTTPCONTEXTACCESSOR DEPENDENCY INJECTION */
+/* IHTTPCONTEXT ACCESSOR DEPENDENCY INJECTION */
 builder.Services.AddHttpContextAccessor();
+
+/* AUTHENTICATE USER DEPENDENCY INJECTION */
+builder.Services.AddScoped<AuthenticateUser>();
 
 builder.Services.AddSession();
 
