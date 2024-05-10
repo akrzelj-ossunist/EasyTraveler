@@ -2,6 +2,7 @@
 using ET.Application.Models.UserDtos.Response;
 using ET.Application.Services;
 using ET.Application.Utilities;
+using ET.Core.Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -10,7 +11,6 @@ namespace ET.Client.Pages.User
 {
     public class ProfileModel : PageModel
     {
-
         private readonly AuthenticateUser _authenticateUser;
         public readonly UserService _userService;
         public required UserResponseDto User {  get; set; }
@@ -25,7 +25,7 @@ namespace ET.Client.Pages.User
         public IActionResult OnGet()
         {
             AuthenticatedDto = _authenticateUser.CreateAuthentication();
-            if (AuthenticatedDto.IsAuthenticated)
+            if (AuthenticatedDto.IsAuthenticated && (AuthenticatedDto.Role == UserRole.User || AuthenticatedDto.Role == UserRole.Admin))
             {
                 User = _userService.FindUserById(AuthenticatedDto.Id);
                 return Page();
@@ -35,7 +35,5 @@ namespace ET.Client.Pages.User
                 return RedirectToPage("/User/Login");
             }
         }
-
-
     }
 }

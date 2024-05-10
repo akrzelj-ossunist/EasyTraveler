@@ -1,6 +1,7 @@
 ﻿using ET.Application.Models;
 using ET.Application.Services;
 using ET.Application.Utilities;
+using ET.Core.Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -21,8 +22,14 @@ namespace ET.Client.Pages.User
         public IActionResult OnGet()
         {
             AuthenticatedDto = _authenticateUser.CreateAuthentication();
-
-            return AuthenticatedDto.IsAuthenticated ? Page() : RedirectToPage("/User/Login");
+            if (AuthenticatedDto.IsAuthenticated && (AuthenticatedDto.Role == UserRole.User || AuthenticatedDto.Role == UserRole.Admin))
+            {
+                return Page();
+            }
+            else
+            {
+                return RedirectToPage("/User/Login");
+            }
         }
 
         public IActionResult OnPost() 

@@ -65,7 +65,8 @@ namespace ET.Application.Services.Impl
             var response = new LoginResponseDto
             {
                 JwtToken = jwtToken,
-                UserResponseDto = _userMapper.UserToUserDto(user)
+                UserResponseDto = _userMapper.UserToUserDto(user),
+                IsSuccess = true
             };
 
             return response;
@@ -100,7 +101,7 @@ namespace ET.Application.Services.Impl
 
             user.Password = BCrypt.Net.BCrypt.HashPassword(passwordChangeDto.NewPassword);
 
-            var newUser = _userRepository.Update(user);
+            _userRepository.Update(user);
 
             return true;
         }

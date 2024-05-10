@@ -9,14 +9,14 @@ namespace ET.Client.Pages.User
 {
     public class LoginModel : PageModel
     {
-
+        public required AuthenticatedDto AuthenticatedDto { get; set; }
+        private readonly AuthenticateUser _authenticateUser;
         private readonly UserService _userService;
-        private readonly JwtService _jwtService;
 
-        public LoginModel(UserService userService, JwtService jwtService)
+        public LoginModel(UserService userService, AuthenticateUser authenticateUser)
         {
             _userService = userService;
-            _jwtService = jwtService;
+            _authenticateUser = authenticateUser;
         }
 
         [BindProperty]
@@ -24,9 +24,11 @@ namespace ET.Client.Pages.User
 
         public LoginResponseDto LoginResponseDto { get; set; }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
-            // Initialization logic if needed
+            AuthenticatedDto = _authenticateUser.CreateAuthentication();
+
+            return AuthenticatedDto.IsAuthenticated ? RedirectToPage("/Index") : Page();
         }
 
         public IActionResult OnPost()
@@ -34,7 +36,7 @@ namespace ET.Client.Pages.User
             if (ModelState.IsValid)
             {
                 LoginResponseDto = _userService.UserLogin(LoginDto);
-                Console.WriteLine(_jwtService.GetJwtTokenFromSession());
+
                 return RedirectToPage("/Index");
             }
             else

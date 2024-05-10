@@ -5,6 +5,7 @@ using ET.Application.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using ET.Application.Models.UserDtos;
+using ET.Core.Entities.Enums;
 
 namespace ET.Client.Pages.User
 {
@@ -26,7 +27,7 @@ namespace ET.Client.Pages.User
         public IActionResult OnGet()
         {
             AuthenticatedDto = _authenticateUser.CreateAuthentication();
-            if (AuthenticatedDto.IsAuthenticated)
+            if (AuthenticatedDto.IsAuthenticated && (AuthenticatedDto.Role == UserRole.User || AuthenticatedDto.Role == UserRole.Admin))
             {
                 User = _userService.FindUserById(AuthenticatedDto.Id);
                 return Page();

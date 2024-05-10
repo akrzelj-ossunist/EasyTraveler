@@ -1,8 +1,11 @@
-﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+﻿@inject ET.Application.Utilities.AuthenticateUser AuthenticateUser
+@using ET.Core.Entities.Enums
 
 @{
-	var jwtToken = HttpContextAccessor.HttpContext.Session.GetString("_JwtToken");
-	var isAuthenticated = !string.IsNullOrEmpty(jwtToken);
+	var auth = AuthenticateUser.CreateAuthentication();
+	var jwtToken = auth.JwtToken;
+	var isAuthenticated = auth.IsAuthenticated;
+	var role = auth.Role;
 }
 
 <!DOCTYPE html>
@@ -29,17 +32,36 @@
 						<ul class="navbar-nav flex-grow-1">
 							@if (isAuthenticated)
 							{
-								<li class="nav-item">
-									<a class="nav-link text-dark" asp-area="" asp-page="/User/Profile">Profile</a>
-								</li>
-								<li class="nav-item">
-									<a class="nav-link text-dark" asp-area="" asp-page="/User/Logout">Logout</a>
-								</li>
+								@if(role == UserRole.Company)
+								{
+									<li class="nav-item">
+										<a class="nav-link text-dark" asp-area="" asp-page="/Company/Profile">Profile</a>
+									</li>
+									<li class="nav-item">
+										<a class="nav-link text-dark" asp-area="" asp-page="/Company/Logout">Logout</a>
+									</li>
+								}
+								@if (role == UserRole.User)
+								{
+									<li class="nav-item">
+										<a class="nav-link text-dark" asp-area="" asp-page="/User/Profile">Profile</a>
+									</li>
+									<li class="nav-item">
+										<a class="nav-link text-dark" asp-area="" asp-page="/User/Logout">Logout</a>
+									</li>
+									@if (role == UserRole.Admin)
+									{
+
+									}
+								}
 							}
 							else
 							{
 								<li class="nav-item">
-									<a class="nav-link text-dark" asp-area="" asp-page="/User/Login">Login</a>
+									<a class="nav-link text-dark" asp-area="" asp-page="/Company/Login">Company Login</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link text-dark" asp-area="" asp-page="/User/Login">UserLogin</a>
 								</li>
 							}
 						</ul>

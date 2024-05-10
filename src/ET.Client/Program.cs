@@ -15,14 +15,15 @@ builder.Services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(conn
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-/* MAPPER DEPENDENCY INJECTION */
-builder.Services.AddScoped<UserMapper>();
-
 /* DATABASE CONTEXT DEPENDENCY INJECTION  */
 builder.Services.AddScoped<DatabaseContext>();
 
 /* JWT TOKEN DEPENDENCY INJECTION */
 builder.Services.AddScoped<JwtService>();
+
+/* MAPPER DEPENDENCY INJECTION */
+builder.Services.AddScoped<UserMapper>();
+builder.Services.AddScoped<CompanyMapper>();
 
 /* SERVICES DEPENDENCY INJECTION */
 builder.Services.AddScoped<UserService, UserServiceImpl>();

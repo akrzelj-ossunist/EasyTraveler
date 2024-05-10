@@ -2,6 +2,7 @@
 using ET.Application.Models.UserDtos.Response;
 using ET.Application.Services;
 using ET.Application.Utilities;
+using ET.Core.Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
@@ -10,7 +11,6 @@ namespace ET.Client.Pages.User
 {
     public class ChangePasswordModel : PageModel
     {
-
         private readonly AuthenticateUser _authenticateUser;
         public readonly UserService _userService;
         public required AuthenticatedDto AuthenticatedDto { get; set; }
@@ -29,8 +29,14 @@ namespace ET.Client.Pages.User
         {
             IsPasswordChanged = true;
             AuthenticatedDto = _authenticateUser.CreateAuthentication();
-
-            return AuthenticatedDto.IsAuthenticated ? Page() : RedirectToPage("/User/Login");
+            if (AuthenticatedDto.IsAuthenticated && (AuthenticatedDto.Role == UserRole.User || AuthenticatedDto.Role == UserRole.Admin))
+            {
+                return Page();
+            }
+            else
+            {
+                return RedirectToPage("/User/Login");
+            }
         }
 
         public IActionResult OnPost()

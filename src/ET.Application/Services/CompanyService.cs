@@ -10,7 +10,7 @@ public interface CompanyService
 {
     public CompanyResponseDto CompanyRegister(CompanyRegisterDto companyRegisterDto);
 
-    public LoginResponseDto CompanyLogin(LoginDto loginDto);
+    public CompanyLoginResponseDto CompanyLogin(LoginDto loginDto);
 
     public bool CompanyUpdatePassword(Guid id, PasswordChangeDto passwordChangeDto);
 
@@ -22,5 +22,5 @@ public interface CompanyService
 
     public List<CompanyResponseDto> CompanyFilterList(Dictionary<string, string> filters);
 
-    public CompanyResponseDto FindUserById(Guid id);
+    public CompanyResponseDto FindCompanyById(Guid id);
 }
