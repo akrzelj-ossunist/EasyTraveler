@@ -27,5 +27,6 @@ public static class ApplicationDependencyInjection
     {
         services.AddScoped<UserService, UserServiceImpl>();
         services.AddScoped<CompanyService, CompanyServiceImpl>();
+        services.AddScoped<BusService, BusServiceImpl>();
     }
 }

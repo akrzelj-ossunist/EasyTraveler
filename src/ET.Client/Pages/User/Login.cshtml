@@ -6,6 +6,12 @@
 
 <div class="container">
 	<h1>User Login</h1>
+	@if (Model.InvalidInputData)
+	{
+		<div class="alert alert-danger" role="alert">
+			Incorrect Email or Password. Please try again.
+		</div>
+	}
 	<form method="post">
 		<div class="form-group p-2">
 			<label for="Email">Email address</label>

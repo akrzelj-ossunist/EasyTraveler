@@ -2,7 +2,7 @@
 using ET.Application.Models.UserDtos.Response;
 using ET.Application.Services;
 using ET.Application.Utilities;
-using ET.Core.Entities.Enums;
+using ET.Core.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

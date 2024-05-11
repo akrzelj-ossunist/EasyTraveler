@@ -12,6 +12,7 @@ namespace ET.Client.Pages.User
         public required AuthenticatedDto AuthenticatedDto { get; set; }
         private readonly AuthenticateUser _authenticateUser;
         private readonly UserService _userService;
+        public required bool InvalidInputData { get; set; }
 
         public LoginModel(UserService userService, AuthenticateUser authenticateUser)
         {
@@ -35,9 +36,16 @@ namespace ET.Client.Pages.User
         {
             if (ModelState.IsValid)
             {
-                LoginResponseDto = _userService.UserLogin(LoginDto);
-
-                return RedirectToPage("/Index");
+                try 
+                {
+                    LoginResponseDto = _userService.UserLogin(LoginDto);
+                    return RedirectToPage("/Index");
+                }
+                catch
+                {
+                    InvalidInputData = true;
+                    return Page();
+                }
             }
             else
             {

@@ -13,6 +13,7 @@ namespace ET.Client.Pages.Company
         public required AuthenticatedDto AuthenticatedDto { get; set; }
         private readonly AuthenticateUser _authenticateUser;
         private readonly CompanyService _companyService;
+        public required bool InvalidInputData { get; set; }
 
         public LoginModel(CompanyService companyService, AuthenticateUser authenticateUser)
         {
@@ -36,9 +37,16 @@ namespace ET.Client.Pages.Company
         {
             if (ModelState.IsValid)
             {
-                LoginResponseDto = _companyService.CompanyLogin(LoginDto);
-
-                return RedirectToPage("/Index");
+                try
+                {
+                    LoginResponseDto = _companyService.CompanyLogin(LoginDto);
+                    return RedirectToPage("/Index");
+                }
+                catch
+                {
+                    InvalidInputData = true;
+                    return Page();
+                }
             }
             else
             {

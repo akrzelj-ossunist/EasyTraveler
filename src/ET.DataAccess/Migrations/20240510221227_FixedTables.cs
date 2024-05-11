@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ET.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class FixedTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -26,22 +26,6 @@ namespace ET.DataAccess.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Company", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Route",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    StartLocation = table.Column<string>(type: "text", nullable: true),
-                    EndLocation = table.Column<string>(type: "text", nullable: true),
-                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    MaxPassengers = table.Column<int>(type: "integer", nullable: false),
-                    CurrentReservations = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Route", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -65,9 +49,10 @@ namespace ET.DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Seats = table.Column<string>(type: "text", nullable: true),
-                    CompanyId = table.Column<Guid>(type: "uuid", nullable: true),
-                    RouteId = table.Column<Guid>(type: "uuid", nullable: true)
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Seats = table.Column<int>(type: "integer", nullable: false),
+                    IsAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    CompanyId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -77,10 +62,28 @@ namespace ET.DataAccess.Migrations
                         column: x => x.CompanyId,
                         principalTable: "Company",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Route",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StartLocation = table.Column<string>(type: "text", nullable: true),
+                    EndLocation = table.Column<string>(type: "text", nullable: true),
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    Price = table.Column<decimal>(type: "numeric", nullable: false),
+                    BusId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CurrentReservations = table.Column<int>(type: "integer", nullable: false),
+                    status = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Route", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Bus_Route_RouteId",
-                        column: x => x.RouteId,
-                        principalTable: "Route",
+                        name: "FK_Route_Bus_BusId",
+                        column: x => x.BusId,
+                        principalTable: "Bus",
                         principalColumn: "Id");
                 });
 
@@ -91,18 +94,13 @@ namespace ET.DataAccess.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Price = table.Column<int>(type: "integer", nullable: false),
                     BoughtDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    BusId = table.Column<Guid>(type: "uuid", nullable: true),
                     UserId = table.Column<Guid>(type: "uuid", nullable: true),
-                    RouteId = table.Column<Guid>(type: "uuid", nullable: true)
+                    RouteId = table.Column<Guid>(type: "uuid", nullable: true),
+                    status = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Ticket", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Ticket_Bus_BusId",
-                        column: x => x.BusId,
-                        principalTable: "Bus",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Ticket_Route_RouteId",
                         column: x => x.RouteId,
@@ -121,13 +119,8 @@ namespace ET.DataAccess.Migrations
                 column: "CompanyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Bus_RouteId",
-                table: "Bus",
-                column: "RouteId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Ticket_BusId",
-                table: "Ticket",
+                name: "IX_Route_BusId",
+                table: "Route",
                 column: "BusId");
 
             migrationBuilder.CreateIndex(
@@ -148,16 +141,16 @@ namespace ET.DataAccess.Migrations
                 name: "Ticket");
 
             migrationBuilder.DropTable(
-                name: "Bus");
+                name: "Route");
 
             migrationBuilder.DropTable(
                 name: "User");
 
             migrationBuilder.DropTable(
-                name: "Company");
+                name: "Bus");
 
             migrationBuilder.DropTable(
-                name: "Route");
+                name: "Company");
         }
     }
 }

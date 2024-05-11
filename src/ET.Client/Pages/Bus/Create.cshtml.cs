@@ -1,44 +1,47 @@
 ﻿using ET.Application.Models;
+using ET.Application.Models.BusDtos;
+using ET.Application.Models.CompanyDtos;
 using ET.Application.Services;
 using ET.Application.Utilities;
 using ET.Core.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace ET.Client.Pages.User
+namespace ET.Client.Pages.Bus
 {
-    public class DeleteModel : PageModel
+    public class CreateModel : PageModel
     {
         private readonly AuthenticateUser _authenticateUser;
-        public readonly UserService _userService;
+        private readonly BusService _busService;
         public required AuthenticatedDto AuthenticatedDto { get; set; }
+        [BindProperty]
+        public required BusDto BusDto{ get; set; }
 
-        public DeleteModel(AuthenticateUser authenticateUser, UserService userService)
+        public CreateModel(AuthenticateUser authenticateUser, BusService busService)
         {
             _authenticateUser = authenticateUser;
-            _userService = userService;
+            _busService = busService;
         }
 
         public IActionResult OnGet()
         {
             AuthenticatedDto = _authenticateUser.CreateAuthentication();
-            if (AuthenticatedDto.IsAuthenticated && (AuthenticatedDto.Role == UserRole.User || AuthenticatedDto.Role == UserRole.Admin))
+            if (AuthenticatedDto.IsAuthenticated && (AuthenticatedDto.Role == UserRole.Company || AuthenticatedDto.Role == UserRole.Admin))
             {
                 return Page();
             }
             else
             {
-                return RedirectToPage("/User/Login");
+                return RedirectToPage("/Company/Login");
             }
         }
 
-        public IActionResult OnPost() 
+        public IActionResult OnPost()
         {
             if (ModelState.IsValid)
             {
-                AuthenticatedDto = _authenticateUser.CreateAuthentication();
-                _userService.UserDelete(AuthenticatedDto.Id);
-                return RedirectToPage("/User/Login");
+                _busService.Create(BusDto);
+                return RedirectToPage("/Bus/List");
             }
             else
             {

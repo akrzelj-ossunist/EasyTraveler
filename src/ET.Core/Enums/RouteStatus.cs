@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ET.Core.Entities.Enums
+namespace ET.Core.Enums
 {
-    public enum UserRole
+    public enum RouteStatus
     {
-        Admin,
-        User,
-        Company
+        Pending,
+        InProgress,
+        Done,
+        Canceled,
     }
 }

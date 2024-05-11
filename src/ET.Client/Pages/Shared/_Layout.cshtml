@@ -1,6 +1,5 @@
 ﻿@inject ET.Application.Utilities.AuthenticateUser AuthenticateUser
-@using ET.Core.Entities.Enums
-
+@using ET.Core.Enums
 @{
 	var auth = AuthenticateUser.CreateAuthentication();
 	var jwtToken = auth.JwtToken;

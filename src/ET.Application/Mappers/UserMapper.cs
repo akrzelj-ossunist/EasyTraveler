@@ -2,7 +2,7 @@
 using ET.Application.Models.UserDtos.Response;
 using ET.Application.Models.UserDtos;
 using ET.Core.Entities;
-using ET.Core.Entities.Enums;
+using ET.Core.Enums;
 
 namespace ET.Application.Mappers
 {

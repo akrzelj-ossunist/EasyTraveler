@@ -1,4 +1,4 @@
-﻿using ET.Core.Entities.Enums;
+﻿using ET.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;

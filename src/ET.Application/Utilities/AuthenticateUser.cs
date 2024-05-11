@@ -5,8 +5,8 @@ using ET.Application.Services;
 using ET.Application.Models;
 using ET.Application.Models.UserDtos.Response;
 using ET.Application.Models.CompanyDtos.Response;
-using ET.Core.Entities.Enums;
 using ET.Application.Exceptions;
+using ET.Core.Enums;
 
 namespace ET.Application.Utilities
 {

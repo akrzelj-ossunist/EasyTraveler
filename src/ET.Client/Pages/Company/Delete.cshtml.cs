@@ -1,7 +1,7 @@
 ﻿using ET.Application.Models;
 using ET.Application.Services;
 using ET.Application.Utilities;
-using ET.Core.Entities.Enums;
+using ET.Core.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -38,7 +38,7 @@ namespace ET.Client.Pages.Company
             {
                 AuthenticatedDto = _authenticateUser.CreateAuthentication();
                 _companyService.CompanyDelete(AuthenticatedDto.Id);
-                return RedirectToPage("/Company/Login");
+                return RedirectToPage("/Company/List");
             }
             else
             {

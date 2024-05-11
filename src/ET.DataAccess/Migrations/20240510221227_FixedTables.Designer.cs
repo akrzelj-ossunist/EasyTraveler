@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ET.DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240509005439_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20240510221227_FixedTables")]
+    partial class FixedTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,17 +34,18 @@ namespace ET.DataAccess.Migrations
                     b.Property<Guid?>("CompanyId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("RouteId")
-                        .HasColumnType("uuid");
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("boolean");
 
-                    b.Property<string>("Seats")
+                    b.Property<string>("Name")
                         .HasColumnType("text");
+
+                    b.Property<int>("Seats")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
-
-                    b.HasIndex("RouteId");
 
                     b.ToTable("Bus");
                 });
@@ -84,14 +85,17 @@ namespace ET.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("BusId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("CurrentReservations")
                         .HasColumnType("integer");
 
                     b.Property<string>("EndLocation")
                         .HasColumnType("text");
 
-                    b.Property<int>("MaxPassengers")
-                        .HasColumnType("integer");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
 
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("date");
@@ -99,7 +103,12 @@ namespace ET.DataAccess.Migrations
                     b.Property<string>("StartLocation")
                         .HasColumnType("text");
 
+                    b.Property<int>("status")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("BusId");
 
                     b.ToTable("Route");
                 });
@@ -113,9 +122,6 @@ namespace ET.DataAccess.Migrations
                     b.Property<DateOnly>("BoughtDate")
                         .HasColumnType("date");
 
-                    b.Property<Guid?>("BusId")
-                        .HasColumnType("uuid");
-
                     b.Property<int>("Price")
                         .HasColumnType("integer");
 
@@ -125,9 +131,10 @@ namespace ET.DataAccess.Migrations
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                    b.Property<int>("status")
+                        .HasColumnType("integer");
 
-                    b.HasIndex("BusId");
+                    b.HasKey("Id");
 
                     b.HasIndex("RouteId");
 
@@ -168,21 +175,20 @@ namespace ET.DataAccess.Migrations
                         .WithMany()
                         .HasForeignKey("CompanyId");
 
-                    b.HasOne("ET.Core.Entities.Route", "Route")
-                        .WithMany()
-                        .HasForeignKey("RouteId");
-
                     b.Navigation("Company");
-
-                    b.Navigation("Route");
                 });
 
-            modelBuilder.Entity("ET.Core.Entities.Ticket", b =>
+            modelBuilder.Entity("ET.Core.Entities.Route", b =>
                 {
                     b.HasOne("ET.Core.Entities.Bus", "Bus")
                         .WithMany()
                         .HasForeignKey("BusId");
 
+                    b.Navigation("Bus");
+                });
+
+            modelBuilder.Entity("ET.Core.Entities.Ticket", b =>
+                {
                     b.HasOne("ET.Core.Entities.Route", "Route")
                         .WithMany()
                         .HasForeignKey("RouteId");
@@ -190,8 +196,6 @@ namespace ET.DataAccess.Migrations
                     b.HasOne("ET.Core.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
-
-                    b.Navigation("Bus");
 
                     b.Navigation("Route");
 

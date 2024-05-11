@@ -5,7 +5,7 @@ using ET.Application.Models.UserDtos.Response;
 using ET.Application.Models;
 using ET.Application.Services;
 using ET.Application.Utilities;
-using ET.Core.Entities.Enums;
+using ET.Core.Enums;
 
 namespace ET.Client.Pages.User
 {

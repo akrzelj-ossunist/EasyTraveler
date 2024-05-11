@@ -2,10 +2,10 @@
 using ET.Application.Models;
 using ET.Application.Services;
 using ET.Application.Utilities;
-using ET.Core.Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using ET.Application.Models.CompanyDtos.Response;
+using ET.Core.Enums;
 
 namespace ET.Client.Pages.Company
 {

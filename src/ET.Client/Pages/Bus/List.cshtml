@@ -1,0 +1,80 @@
+﻿@page
+@model ET.Client.Pages.Bus.ListModel
+@{
+	ViewData["Title"] = "List of Buses";
+}
+
+
+<h1>Filter Buses: </h1>
+
+<form asp-page="/Bus/List" method="get">
+	<div class="mb-3">
+		<label for="filterName" class="form-label">Name:</label>
+		<input type="text" id="filterName" name="name" class="form-control" />
+	</div>
+	<div class="mb-3">
+		<label for="filterSeats" class="form-label">Seats:</label>
+		<input type="number" id="filterSeats" name="seats" class="form-control" />
+	</div>
+	<div class="mb-3">
+		<label for="filterIsAvailable" class="form-label">Is Available:</label>
+		<select id="filterIsAvailable" name="isAvailable" class="form-select">
+			<option value="">Select Availability...</option>
+			<option value="true">Yes</option>
+			<option value="false">No</option>
+		</select>
+	</div>
+	<div class="mb-3">
+		<label for="filterCompanyName" class="form-label">Company Name:</label>
+		<input type="text" id="filterCompanyName" name="company" class="form-control" />
+	</div>
+	<div class="mb-3">
+		<label for="sortBy" class="form-label">Sort By:</label>
+		<select id="sortBy" name="sortBy" class="form-select">
+			<option value="name">Name</option>
+			<option value="seats">Seats</option>
+			<option value="isAvailable">Is Available</option>
+			<option value="company.name">Company Name</option>
+		</select>
+	</div>
+	<button type="submit" class="btn btn-primary">Filter</button>
+</form>
+
+<h1>@ViewData["Title"]</h1>
+
+@if (Model.Buses != null && Model.Buses.Count > 0)
+{
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+				<th>Seats</th>
+				<th>Is Available</th>
+				<th>Company Name</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var bus in Model.Buses)
+			{
+				<tr>
+					<td>@bus.Id</td>
+					<td>@bus.Name</td>
+					<td>@bus.Seats</td>
+					<td>@(bus.IsAvailable ? "Yes" : "No")</td>
+					<td>@bus.Company.Name</td>
+					<td>
+						<a asp-page="/Bus/Edit" asp-route-id="@bus.Id" type="submit" class="btn btn-primary">Edit</a>
+						<!-- Add other actions if needed -->
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+else
+{
+	<p>No buses found.</p>
+}
+

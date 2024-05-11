@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ET.Core.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,9 +12,8 @@ namespace ET.Core.Entities
         public Guid Id { get; set; }
         public int Price { get; set; }
         public DateOnly BoughtDate { get; set; }
-        public Bus Bus { get; set; }
         public User User { get; set; }
         public Route Route { get; set; } 
-
+        public TicketStatus status { get; set; }
     }
 }

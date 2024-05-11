@@ -5,7 +5,7 @@ using ET.Application.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using ET.Application.Models.UserDtos;
-using ET.Core.Entities.Enums;
+using ET.Core.Enums;
 
 namespace ET.Client.Pages.User
 {

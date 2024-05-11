@@ -4,14 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ET.Core.Entities
+namespace ET.Application.Models.BusDtos
 {
-    public class Bus
+    public class BusDto
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public int Seats { get; set; }
-        public bool IsAvailable { get; set; }
-        public Company Company { get; set; }
     }
 }
