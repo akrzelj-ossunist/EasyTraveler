@@ -1,13 +1,14 @@
-﻿using ET.Core.Enums;
+﻿using ET.Core.Entities;
+using ET.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ET.Core.Entities
+namespace ET.Application.Models.RouteDtos.Response
 {
-    public class Route
+    public class RouteResponseDto
     {
         public Guid Id { get; set; }
         public string StartLocation { get; set; }

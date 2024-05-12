@@ -1,21 +1,18 @@
-﻿using ET.Core.Enums;
+﻿using ET.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ET.Core.Entities
+namespace ET.Application.Models.RouteDtos
 {
-    public class Route
+    public class RouteDto
     {
-        public Guid Id { get; set; }
         public string StartLocation { get; set; }
         public string EndLocation { get; set; }
         public DateOnly StartDate { get; set; }
         public decimal Price { get; set; }
-        public Bus Bus { get; set; }
-        public int CurrentReservations { get; set; }
-        public RouteStatus Status { get; set; }
+        public Guid BusId { get; set; }
     }
 }
