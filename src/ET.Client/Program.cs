@@ -31,6 +31,7 @@ builder.Services.AddScoped<RouteMapper>();
 builder.Services.AddScoped<UserService, UserServiceImpl>();
 builder.Services.AddScoped<CompanyService, CompanyServiceImpl>();
 builder.Services.AddScoped<BusService, BusServiceImpl>();
+builder.Services.AddScoped<RouteService, RouteServiceImpl>();
 
 /* REPOSITORIES DEPENDENCY INJECTION */
 builder.Services.AddScoped<UserRepository, UserRepositoryImpl>();

@@ -107,5 +107,16 @@ namespace ET.Application.Services.Impl
 
             return _busRepository.GetTotalByParams(companyId, name, seats, isAvailable, company, size);
         }
+
+        public List<BusResponseDto> GetAll()
+        {
+            AuthenticatedDto = _authenticateUser.CreateAuthentication();
+
+            var companyId = AuthenticatedDto.Id.ToString();
+
+            var buses = _busRepository.FindAll(companyId);
+
+            return buses.Select(_busMapper.BusToBusDto).ToList();
+        }
     }
 }

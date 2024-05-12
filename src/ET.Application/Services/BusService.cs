@@ -15,6 +15,7 @@ namespace ET.Application.Services
         public bool Delete(Guid id);
         public BusResponseDto GetById(Guid id);
         public int GetTotal(Dictionary<string, string> searchParams);
+        public List<BusResponseDto> GetAll();
         public List<BusResponseDto> Filter(BusPageDto busPageDto, Dictionary<string, string> searchParams);
     }
 }

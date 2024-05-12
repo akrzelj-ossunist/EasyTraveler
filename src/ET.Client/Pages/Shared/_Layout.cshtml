@@ -51,6 +51,20 @@
 										</ul>
 									</div>
 
+									<div class="dropdown mx-2">
+										<button class="btn btn-secondary dropdown-toggle bg-white border-1 border-light shadow-lg rounded-2 text-black" type="button" id="dropdownMenuButton" aria-expanded="false">
+											Bus options
+										</button>
+										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+											<li class="nav-item">
+												<a class="nav-link text-dark" asp-area="" asp-page="/Route/Create">Create Route</a>
+											</li>
+											<li class="nav-item">
+												<a class="nav-link text-dark" asp-area="" asp-page="/Route/List">My Routes</a>
+											</li>
+										</ul>
+									</div>
+
 									<li class="nav-item">
 										<a class="nav-link text-dark" asp-area="" asp-page="/Company/Logout">Logout</a>
 									</li>
@@ -106,17 +120,33 @@
 
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
-		var dropdownButton = document.getElementById("dropdownMenuButton");
-		var dropdownMenu = document.querySelector(".dropdown-menu");
+		var dropdownButtons = document.querySelectorAll(".dropdown-toggle");
+		var dropdownMenus = document.querySelectorAll(".dropdown-menu");
 
-		dropdownButton.addEventListener("click", function () {
-			dropdownMenu.classList.toggle("show");
+		dropdownButtons.forEach(function (dropdownButton, index) {
+			dropdownButton.addEventListener("click", function (event) {
+				event.stopPropagation();
+				closeOtherDropdowns(index);
+				dropdownMenus[index].classList.toggle("show");
+			});
 		});
 
-		document.addEventListener("click", function (event) {
-			if (!dropdownButton.contains(event.target)) {
+		document.addEventListener("click", function () {
+			closeAllDropdowns();
+		});
+
+		function closeOtherDropdowns(currentIndex) {
+			dropdownMenus.forEach(function (dropdownMenu, index) {
+				if (index !== currentIndex) {
+					dropdownMenu.classList.remove("show");
+				}
+			});
+		}
+
+		function closeAllDropdowns() {
+			dropdownMenus.forEach(function (dropdownMenu) {
 				dropdownMenu.classList.remove("show");
-			}
-		});
+			});
+		}
 	});
 </script>

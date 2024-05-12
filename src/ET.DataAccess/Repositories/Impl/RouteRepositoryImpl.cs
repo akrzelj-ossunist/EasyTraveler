@@ -72,11 +72,22 @@ namespace ET.DataAccess.Repositories.Impl
         public Route Save(Route route)
         {
             if (route == null) throw new ArgumentNullException("Sent route argument cannot be null!");
+
+            // Retrieve the existing Bus entity if it exists
+            var existingBus = _context.Bus.Find(route.Bus.Id);
+            if (existingBus != null)
+            {
+                // Use the existing Bus entity
+                route.Bus = existingBus;
+            }
+
+            Console.WriteLine(route.Bus.Name + "READY FOR CREATION");
             _context.Route.Add(route);
             _context.SaveChanges();
 
             return route;
         }
+
 
         public Route Update(Route route)
         {

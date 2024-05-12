@@ -83,16 +83,13 @@ namespace ET.DataAccess.Repositories.Impl
             return (int)Math.Ceiling((double)query.Count() / size);
         }
 
-        public List<Bus> FindAll(string companyId, int page, int size, string sortBy)
+        public List<Bus> FindAll(string companyId)
         {
             var query = from bus in _context.Bus
                         where (string.IsNullOrEmpty(companyId) || bus.Company.Id.ToString().Equals(companyId))
                         select bus;
 
-            return SortList(sortBy, query)
-                    .Skip(page * size)
-                    .Take(size)
-                    .ToList();
+            return query.ToList();
         }
 
 

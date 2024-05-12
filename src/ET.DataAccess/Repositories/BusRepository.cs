@@ -12,7 +12,7 @@ namespace ET.DataAccess.Repositories
 
         public bool Delete(Bus bus);
 
-        public List<Bus> FindAll(string companyId, int page, int size, string sortBy);
+        public List<Bus> FindAll(string companyId);
 
         public List<Bus> FilterByParams(string companyId, string name, string seats, string isAvailable, string company, int page, int size, string sortBy);
 
