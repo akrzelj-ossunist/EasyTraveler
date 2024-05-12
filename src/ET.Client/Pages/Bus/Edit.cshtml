@@ -1,4 +1,20 @@
 ﻿@page
 @model ET.Client.Pages.Bus.EditModel
 @{
+	ViewData["Title"] = "Edit Bus";
 }
+
+<div class="container mt-4">
+	<h1>Edit Bus</h1>
+	<form method="post">
+		<div class="form-group p-2">
+			<label for="Name">Name</label>
+			<input type="text" class="form-control" id="Name" name="Name" placeholder="Enter bus name" required value="@Model.Bus.Name">
+		</div>
+		<div class="form-group p-2">
+			<label for="Seats">Seats</label>
+			<input type="number" class="form-control" id="Seats" name="Seats" placeholder="Enter number of seats" required value="@Model.Bus.Seats">
+		</div>
+		<button type="submit" class="btn btn-primary m-2">Update</button>
+	</form>
+</div>

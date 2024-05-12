@@ -16,21 +16,26 @@ namespace ET.Client.Pages.Bus
         public required AuthenticatedDto AuthenticatedDto { get; set; }
         public required List<BusResponseDto> Buses { get; set; }
         [BindProperty]
-        public required BusDto BusDto { get; set; }
+        public required BusPageDto BusPageDto { get; set; } = new BusPageDto();
 
         public ListModel(AuthenticateUser authenticateUser, BusService busService)
         {
             _authenticateUser = authenticateUser;
             _busService = busService;
         }
-        public IActionResult OnGet(Dictionary<string, string> searchParams)
+        public IActionResult OnGet(Dictionary<string, string> searchParams, int? pageIndex)
         {
+
             AuthenticatedDto = _authenticateUser.CreateAuthentication();
-            var validator = new ValidatePageableParams();
+            
+            BusPageDto.SearchParams = searchParams;
+            BusPageDto.Page = pageIndex ?? 0;
 
             if (AuthenticatedDto.IsAuthenticated && (AuthenticatedDto.Role == UserRole.Company || AuthenticatedDto.Role == UserRole.Admin))
             {
-                Buses = _busService.List(searchParams);
+                Buses = _busService.Filter(BusPageDto, searchParams);
+                BusPageDto.Buses = Buses;
+                BusPageDto.TotalPages = _busService.GetTotal(searchParams);
                 return Page();
             }
             else

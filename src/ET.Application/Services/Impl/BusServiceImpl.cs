@@ -65,56 +65,47 @@ namespace ET.Application.Services.Impl
             return _busMapper.BusToBusDto(editedBus);
         }
 
-        public List<BusResponseDto> Filter(Dictionary<string, string> searchParams)
+        public List<BusResponseDto> Filter(BusPageDto busPageDto, Dictionary<string, string> searchParams)
         {
-            var validator = new ValidatePageableParams();
             AuthenticatedDto = _authenticateUser.CreateAuthentication();
-            Console.WriteLine(searchParams["page"] + " SHOULD BE BEFORE:!");
+
             var companyId = AuthenticatedDto.Id.ToString();
             var name = searchParams.GetValueOrDefault("name", "");
             var isAvailable = searchParams.GetValueOrDefault("isAvailable", "");
             var seats = searchParams.GetValueOrDefault("seats", "");
             var company = searchParams.GetValueOrDefault("company", "");
-            var pageParam = validator.Validate(searchParams.GetValueOrDefault("page", "0"), 0);
-            var sizeParam = validator.Validate(searchParams.GetValueOrDefault("size", "10"), 10);
             var sortByParam = searchParams.TryGetValue("sortBy", out var value) ? value : "Id";
-            Console.WriteLine("PAGE PARAM IS: " + pageParam);
+
             if (AuthenticatedDto.Role == Core.Enums.UserRole.Admin)
             {
                 company = "";
                 companyId = "";
             }
 
-            var buses = _busRepository.FilterByParams(companyId, name, seats, isAvailable, company, pageParam, sizeParam, sortByParam);
+            var buses = _busRepository.FilterByParams(companyId, name, seats, isAvailable, company, busPageDto.Page, busPageDto.Size, sortByParam);
 
             return buses.Select(_busMapper.BusToBusDto).ToList();
         }
 
-
-        public List<BusResponseDto> GetAll(Dictionary<string, string> searchParams)
+        public int GetTotal(Dictionary<string, string> searchParams)
         {
             var validator = new ValidatePageableParams();
             AuthenticatedDto = _authenticateUser.CreateAuthentication();
 
-            var page = validator.Validate(searchParams.GetValueOrDefault("page", "0"), 0);
-            var size = validator.Validate(searchParams.GetValueOrDefault("size", "10"), 10);
-            var sortBy = searchParams.TryGetValue("sortBy", out var value) ? value : "Id";
-            var companyId = "";
+            var companyId = AuthenticatedDto.Id.ToString();
+            var name = searchParams.GetValueOrDefault("name", "");
+            var isAvailable = searchParams.GetValueOrDefault("isAvailable", "");
+            var seats = searchParams.GetValueOrDefault("seats", "");
+            var company = searchParams.GetValueOrDefault("company", "");
+            var size = validator.Validate(searchParams.GetValueOrDefault("size", "5"), 5);
 
-            if(AuthenticatedDto.Role == Core.Enums.UserRole.Company) companyId = AuthenticatedDto.Id.ToString();
-
-            var buses = _busRepository.FindAll(companyId, page, size, sortBy);
-
-            return buses.Select(_busMapper.BusToBusDto).ToList();
-        }
-
-        public List<BusResponseDto> List(Dictionary<string, string> searchParams)
-        {
-            if (searchParams == null || searchParams.All(kv => string.IsNullOrEmpty(kv.Value)))
+            if (AuthenticatedDto.Role == Core.Enums.UserRole.Admin)
             {
-                return GetAll(searchParams);
+                company = "";
+                companyId = "";
             }
-            return Filter(searchParams);
+
+            return _busRepository.GetTotalByParams(companyId, name, seats, isAvailable, company, size);
         }
     }
 }

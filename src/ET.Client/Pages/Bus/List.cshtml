@@ -2,6 +2,9 @@
 @model ET.Client.Pages.Bus.ListModel
 @{
 	ViewData["Title"] = "List of Buses";
+
+	var previous = Model.BusPageDto.Page == 0 ? "disabled" : "";
+	var next = Model.BusPageDto.Page + 1 == Model.BusPageDto.TotalPages ? "disabled" : "";
 }
 
 
@@ -78,3 +81,58 @@ else
 	<p>No buses found.</p>
 }
 
+@* PAGINATION *@
+
+
+@functions {
+	IDictionary<string, string> GetRouteData(int num)
+	{
+		Dictionary<string, string> routeData = new Dictionary<string, string>();
+		if (Model.BusPageDto.SearchParams != null)
+		{
+			foreach (var param in Model.BusPageDto.SearchParams)
+			{
+				routeData[param.Key] = param.Value;
+			}
+		}
+		// Add pageIndex to the route data
+		routeData["pageIndex"] = num.ToString();
+		return routeData;
+	}
+}
+<div>
+	<ul class="pagination">
+		<li class="page-item">
+			<a asp-page="./List"
+			   asp-route-pageIndex="@(Model.BusPageDto.Page - 1)"
+			   asp-all-route-data="GetRouteData(Model.BusPageDto.Page - 1)"
+			   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+			   class="page-link btn @previous"
+			   role="button">
+				Previous
+			</a>
+		</li>
+		@for (var i = 0; i < Model.BusPageDto.TotalPages; i++)
+		{
+			<li class="page-item @(i == Model.BusPageDto.Page ? "active" : "")">
+				<a asp-page="./List"
+				   asp-route-pageIndex="@i"
+				   asp-all-route-data="GetRouteData(i)"
+				   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+				   class="page-link">
+					@(i + 1)
+				</a>
+			</li>
+		}
+		<li class="page-item">
+			<a asp-page="./List"
+			   asp-route-pageIndex="@(Model.BusPageDto.Page + 1)"
+			   asp-all-route-data="GetRouteData(Model.BusPageDto.Page + 1)"
+			   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+			   class="page-link btn @next"
+			   role="button">
+				Next
+			</a>
+		</li>
+	</ul>
+</div>

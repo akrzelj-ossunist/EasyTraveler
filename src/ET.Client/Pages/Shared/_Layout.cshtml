@@ -36,6 +36,21 @@
 									<li class="nav-item">
 										<a class="nav-link text-dark" asp-area="" asp-page="/Company/Profile">Profile</a>
 									</li>
+
+									<div class="dropdown mx-2">
+										<button class="btn btn-secondary dropdown-toggle bg-white border-1 border-light shadow-lg rounded-2 text-black" type="button" id="dropdownMenuButton" aria-expanded="false">
+											Bus options
+										</button>
+										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+											<li class="nav-item">
+												<a class="nav-link text-dark" asp-area="" asp-page="/Bus/Create">Create Bus</a>
+											</li>
+											<li class="nav-item">
+												<a class="nav-link text-dark" asp-area="" asp-page="/Bus/List">Bus List</a>
+											</li>
+										</ul>
+									</div>
+
 									<li class="nav-item">
 										<a class="nav-link text-dark" asp-area="" asp-page="/Company/Logout">Logout</a>
 									</li>
@@ -88,3 +103,20 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		var dropdownButton = document.getElementById("dropdownMenuButton");
+		var dropdownMenu = document.querySelector(".dropdown-menu");
+
+		dropdownButton.addEventListener("click", function () {
+			dropdownMenu.classList.toggle("show");
+		});
+
+		document.addEventListener("click", function (event) {
+			if (!dropdownButton.contains(event.target)) {
+				dropdownMenu.classList.remove("show");
+			}
+		});
+	});
+</script>
