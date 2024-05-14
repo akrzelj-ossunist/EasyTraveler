@@ -23,18 +23,23 @@ namespace ET.Application.Services.Impl
         private readonly RouteRepository _routeRepository;
         private readonly AuthenticateUser _authenticateUser;
         private readonly RouteMapper _routeMapper;
+        private readonly BusService _busService;
         public required AuthenticatedDto AuthenticatedDto { get; set; }
 
-        public RouteServiceImpl(RouteRepository routeRepository, AuthenticateUser authenticateUser, RouteMapper routeMapper)
+        public RouteServiceImpl(RouteRepository routeRepository, AuthenticateUser authenticateUser, RouteMapper routeMapper, BusService busService)
         {
             _routeRepository = routeRepository;
             _authenticateUser = authenticateUser;
             _routeMapper = routeMapper;
+            _busService = busService;
         }
 
         public RouteResponseDto Create(RouteDto routeDto)
         {
             if (routeDto == null) throw new InvalidArgumentsException("Sent route create data cannot be null!");
+
+            if (routeDto.StartLocation == routeDto.EndLocation) throw new Exception("Start location cannot be same as end location!");
+            if (routeDto.StartDate >= routeDto.EndDate) throw new Exception("Start date cannot be before end date!");
 
             var newData = _routeRepository.Save(_routeMapper.RouteDtoToRoute(routeDto));
 
@@ -95,6 +100,19 @@ namespace ET.Application.Services.Impl
             var editedRoute = _routeRepository.Update(route);
 
             return _routeMapper.RouteToRouteDto(editedRoute);
+        }
+
+        public List<Bus> GetAvailableBuses(DateTime startDate, DateTime endDate, string starLocation)
+        {
+            AuthenticatedDto = _authenticateUser.CreateAuthentication();
+
+            var companyId = AuthenticatedDto.Id.ToString();
+            if (AuthenticatedDto.Role != Core.Enums.UserRole.Company)
+                companyId = "";
+
+            if (startDate > endDate) throw new Exception("Start date cannot be after end date");
+
+            return _routeRepository.GetAvailableBuses(startDate, endDate, companyId, starLocation);
         }
     }
 }

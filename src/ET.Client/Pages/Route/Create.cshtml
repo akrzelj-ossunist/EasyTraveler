@@ -6,33 +6,86 @@
 
 <div class="container mt-4">
 	<h1>Create Route</h1>
-	<form method="post">
+	<form method="get" asp-page="/Route/Available">
 		<div class="form-group">
 			<label for="StartLocation">Start Location</label>
-			<input type="text" class="form-control" id="StartLocation" name="StartLocation" placeholder="Enter start location" required>
+			<select class="form-control select2" id="StartLocation" name="StartLocation" required>
+				<option value="">Select start location</option>
+				@foreach (var location in Model.Locations)
+				{
+					<option value="@location.Name">@location.Name</option>
+				}
+			</select>
 		</div>
 		<div class="form-group">
 			<label for="EndLocation">End Location</label>
-			<input type="text" class="form-control" id="EndLocation" name="EndLocation" placeholder="Enter end location" required>
+			<select class="form-control select2" id="EndLocation" name="EndLocation" required>
+				<option value="">Select end location</option>
+				<!-- Add your options here -->
+				@foreach (var location in Model.Locations)
+				{
+					<option value="@location.Name">@location.Name</option>
+				}
+			</select>
 		</div>
 		<div class="form-group">
 			<label for="StartDate">Start Date</label>
-			<input type="date" class="form-control" id="StartDate" name="StartDate" required>
+			<input type="datetime-local" class="form-control" id="StartDate" name="StartDate" required>
+		</div>
+		<div class="form-group">
+			<label for="StartDate">End Date</label>
+			<input type="datetime-local" class="form-control" id="EndDate" name="EndDate" required>
 		</div>
 		<div class="form-group">
 			<label for="Price">Price</label>
 			<input type="number" class="form-control" id="Price" name="Price" placeholder="Enter price" required>
 		</div>
-		<div class="form-group">
-			<label for="BusId">Select Bus</label>
-			<select class="form-control" id="BusId" name="BusId" required>
-				<option value="">Select a bus</option>
-				@foreach (var bus in Model.Buses)
-				{
-					<option value="@bus.Id">@bus.Name</option>
-				}
-			</select>
-		</div>
 		<button type="submit" class="btn btn-primary">Create</button>
 	</form>
 </div>
+
+<script>
+	document.getElementById('EndLocation').addEventListener('change', function () {
+		var startLocation = document.getElementById('StartLocation').value;
+		var endLocation = this.value;
+
+		if (startLocation === endLocation) {
+			// Display error message and disable submit button
+			alert('End location cannot be the same as start location');
+			document.getElementById('EndLocation').value = '';
+		}
+	});
+
+	document.addEventListener('DOMContentLoaded', function () {
+		// Get references to the input elements
+		var startDateInput = document.getElementById('StartDate');
+		var endDateInput = document.getElementById('EndDate');
+
+		// Attach an event listener to the input elements
+		startDateInput.addEventListener('change', function () {
+			validateDates();
+		});
+
+		endDateInput.addEventListener('change', function () {
+			validateDates();
+		});
+
+		// Function to validate dates
+		function validateDates() {
+			var startDate = new Date(startDateInput.value);
+			var endDate = new Date(endDateInput.value);
+
+			// Check if start date is after end date
+			if (startDate > endDate) {
+				startDateInput.classList.add('is-invalid');
+				endDateInput.classList.add('is-invalid');
+				endDateInput.setCustomValidity("End Date have to be after Start Date!");
+			} else {
+				// Clear any previous validation styles
+				startDateInput.classList.remove('is-invalid');
+				endDateInput.classList.remove('is-invalid');
+				endDateInput.setCustomValidity('');
+			}
+		}
+	});
+</script>

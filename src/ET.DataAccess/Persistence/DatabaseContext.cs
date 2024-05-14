@@ -16,5 +16,6 @@ public class DatabaseContext : DbContext
     public DbSet<User> User { get; set; }
     public DbSet<Route> Route { get; set; }
     public DbSet<Ticket> Ticket { get; set; }
+    public DbSet<Location> Location { get; set; }
 
 }

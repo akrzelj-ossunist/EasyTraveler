@@ -13,6 +13,7 @@ namespace ET.Application.Models.BusDtos.Response
         public string Name { get; set; }
         public int Seats { get; set; }
         public bool IsAvailable { get; set; }
+        public string CurrentLocation { get; set; }
         public CompanyResponseDto Company { get; set; }
     }
 }

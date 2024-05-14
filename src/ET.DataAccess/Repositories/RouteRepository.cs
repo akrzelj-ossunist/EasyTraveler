@@ -20,5 +20,7 @@ namespace ET.DataAccess.Repositories
         public List<Route> FilterByParams(string companyId, int page, int size, string sortBy, string startLocation, string endLocation, string startDate, string price, string bus, string status);
 
         public int GetTotalByParams(string companyId, string startLocation, string endLocation, string startDate, string price, string bus, string status, int size);
+
+        public List<Bus> GetAvailableBuses(DateTime startDate, DateTime endDate, string companyId, string startLocation);
     }
 }

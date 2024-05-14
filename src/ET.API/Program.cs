@@ -35,6 +35,7 @@ builder.Services.AddScoped<UserMapper> ();
 builder.Services.AddScoped<CompanyMapper>();
 builder.Services.AddScoped<BusMapper>();
 builder.Services.AddScoped<RouteMapper>();
+builder.Services.AddScoped<LocationMapper>();
 builder.Services.AddScoped<DatabaseContext>();
 builder.Services.AddScoped<AuthenticateUser>();
 

@@ -26,18 +26,21 @@ builder.Services.AddScoped<UserMapper>();
 builder.Services.AddScoped<CompanyMapper>();
 builder.Services.AddScoped<BusMapper>();
 builder.Services.AddScoped<RouteMapper>();
+builder.Services.AddScoped<LocationMapper>();
 
 /* SERVICES DEPENDENCY INJECTION */
 builder.Services.AddScoped<UserService, UserServiceImpl>();
 builder.Services.AddScoped<CompanyService, CompanyServiceImpl>();
 builder.Services.AddScoped<BusService, BusServiceImpl>();
 builder.Services.AddScoped<RouteService, RouteServiceImpl>();
+builder.Services.AddScoped<LocationServices, LocationServiceImpl>();
 
 /* REPOSITORIES DEPENDENCY INJECTION */
 builder.Services.AddScoped<UserRepository, UserRepositoryImpl>();
 builder.Services.AddScoped<CompanyRepository, CompanyRepositoryImpl>();
 builder.Services.AddScoped<BusRepository, BusRepositroyImpl>();
 builder.Services.AddScoped<RouteRepository, RouteRepositoryImpl>();
+builder.Services.AddScoped<LocationRepository, LocationRepositoryImpl>();
 
 /* IHTTPCONTEXT ACCESSOR DEPENDENCY INJECTION */
 builder.Services.AddHttpContextAccessor();

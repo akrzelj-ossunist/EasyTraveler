@@ -25,6 +25,7 @@ public static class DataAccessDependencyInjection
         services.AddScoped<CompanyRepository, CompanyRepositoryImpl>();
         services.AddScoped<UserRepository, UserRepositoryImpl>();
         services.AddScoped<RouteRepository, RouteRepositoryImpl>();
+        services.AddScoped<LocationRepository, LocationRepositoryImpl>();
     }
 
     private static void AddDatabase(this IServiceCollection services, IConfiguration configuration)

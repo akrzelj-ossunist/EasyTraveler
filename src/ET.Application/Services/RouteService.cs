@@ -1,12 +1,6 @@
-﻿using ET.Application.Models.BusDtos.Response;
-using ET.Application.Models.BusDtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ET.Application.Models.RouteDtos.Response;
+﻿using ET.Application.Models.RouteDtos.Response;
 using ET.Application.Models.RouteDtos;
+using ET.Core.Entities;
 
 namespace ET.Application.Services
 {
@@ -18,5 +12,8 @@ namespace ET.Application.Services
         public RouteResponseDto GetById(Guid id);
         public int GetTotal(Dictionary<string, string> searchParams);
         public List<RouteResponseDto> Filter(RoutePageDto routePageDto, Dictionary<string, string> searchParams);
+
+        /* Takes start and end date and cheks if there is already reservation within these dates, also takes start location and check if his current location is start location */
+        public List<Bus> GetAvailableBuses(DateTime startDate, DateTime endDate, string starLocation);
     }
 }

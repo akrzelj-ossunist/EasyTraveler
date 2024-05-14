@@ -29,5 +29,6 @@ public static class ApplicationDependencyInjection
         services.AddScoped<CompanyService, CompanyServiceImpl>();
         services.AddScoped<BusService, BusServiceImpl>();
         services.AddScoped<RouteService, RouteServiceImpl>();
+        services.AddScoped<LocationRepository, LocationRepositoryImpl>();
     }
 }

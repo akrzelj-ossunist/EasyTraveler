@@ -1,0 +1,21 @@
+﻿@page
+@model ET.Client.Pages.Route.AvailableModel
+@{
+}
+
+<div class="container mt-4">
+	<h1>Available Buses</h1>
+	<form method="post">
+		<div class="form-group">
+			<label for="BusId">Select Bus</label>
+			<select class="form-control" id="BusId" name="BusId" required>
+				<option value="">Select a bus</option>
+				@foreach (var bus in Model.Buses)
+				{
+					<option value="@bus.Id">@bus.Name</option>
+				}
+			</select>
+		</div>
+		<button type="submit" class="btn btn-primary">Select</button>
+	</form>
+</div>

@@ -18,7 +18,9 @@ namespace ET.Application.Mappers
                 cfg.CreateMap<RouteDto, Route>()
                    .ForMember(dest => dest.Status, opt => opt.MapFrom(src => RouteStatus.Pending))
                    .ForMember(dest => dest.CurrentReservations, opt => opt.MapFrom(src => 0))
-                   .ForMember(dest => dest.Bus, opt => opt.MapFrom(src => new Bus { Id = src.BusId }));
+                   .ForMember(dest => dest.Bus, opt => opt.MapFrom(src => new Bus { Id = src.BusId }))
+                   .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.ToUniversalTime()))
+                   .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.ToUniversalTime()));
                 cfg.CreateMap<Route, RouteResponseDto>();
             });
 

@@ -11,7 +11,7 @@ namespace ET.Core.Entities
     {
         public Guid Id { get; set; }
         public int Price { get; set; }
-        public DateOnly BoughtDate { get; set; }
+        public DateTime BoughtDate { get; set; }
         public User User { get; set; }
         public Route Route { get; set; } 
         public TicketStatus status { get; set; }

@@ -1,12 +1,5 @@
 ﻿using ET.Core.Entities;
 using ET.DataAccess.Persistence;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace ET.DataAccess.Repositories.Impl
 {
@@ -29,7 +22,7 @@ namespace ET.DataAccess.Repositories.Impl
 
         public List<Route> FilterByParams(string companyId, int page, int size, string sortBy, string startLocation, string endLocation, string startDate, string price, string bus, string status)
         {
-            DateOnly startDateParsed = DateOnly.Parse(startDate);
+            DateTime startDateParsed = DateTime.Parse(startDate);
 
             var query = from route in _context.Route
                         where (string.IsNullOrEmpty(startLocation) || route.StartLocation.ToLower().Contains(startLocation.ToLower()) && startLocation.Length > 2)
@@ -54,7 +47,7 @@ namespace ET.DataAccess.Repositories.Impl
 
         public int GetTotalByParams(string companyId, string startLocation, string endLocation, string startDate, string price, string bus, string status, int size)
         {
-            DateOnly startDateParsed = DateOnly.Parse(startDate);
+            DateTime startDateParsed = DateTime.Parse(startDate);
 
             var query = from route in _context.Route
                         where (string.IsNullOrEmpty(startLocation) || route.StartLocation.ToLower().Contains(startLocation.ToLower()) && startLocation.Length > 2)
@@ -124,5 +117,22 @@ namespace ET.DataAccess.Repositories.Impl
             }
             return query;
         }
+
+        public List<Bus> GetAvailableBuses(DateTime startDate, DateTime endDate, string companyId, string startLocation)
+        {
+            var query = from bus in _context.Bus
+                        where (string.IsNullOrEmpty(companyId) || bus.Company.Id.ToString() == companyId)
+                            && !(
+                                from route in _context.Route
+                                where route.Bus.Id == bus.Id
+                                    && !(endDate < route.StartDate || startDate > route.EndDate)
+                                select route
+                            ).Any()
+                            && (bus.CurrentLocation.ToLower().Equals(startLocation.ToLower()))
+                        select bus;
+
+            return query.ToList();
+        }
+
     }
 }

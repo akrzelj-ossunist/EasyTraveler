@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ET.Application.Models.BusDtos
+namespace ET.Application.Models.LocationDtos.Response
 {
-    public class BusDto
+    public class LocationResponseDto
     {
+        public Guid Id { get; set; }
         public string Name { get; set; }
-        public int Seats { get; set; }
-        public string CurrentLocation { get; set; }
     }
 }

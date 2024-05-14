@@ -7,24 +7,22 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using ET.Application.Models.RouteDtos;
 using ET.Core.Enums;
 using ET.Application.Models.BusDtos.Response;
+using ET.Core.Entities;
+using ET.Application.Models.LocationDtos.Response;
 
 namespace ET.Client.Pages.Route
 {
     public class CreateModel : PageModel
     {
         private readonly AuthenticateUser _authenticateUser;
-        private readonly RouteService _routeService;
-        private readonly BusService _busService;
+        private readonly LocationServices _locationServices;
         public required AuthenticatedDto AuthenticatedDto { get; set; }
-        public required List<BusResponseDto> Buses { get; set; }
-        [BindProperty]
-        public required RouteDto RouteDto { get; set; }
+        public required List<LocationResponseDto> Locations { get; set; }
 
-        public CreateModel(AuthenticateUser authenticateUser, RouteService routeService, BusService busService)
+        public CreateModel(AuthenticateUser authenticateUser, LocationServices locationServices)
         {
             _authenticateUser = authenticateUser;
-            _routeService = routeService;
-            _busService = busService;
+            _locationServices = locationServices;
         }
 
         public IActionResult OnGet()
@@ -32,25 +30,12 @@ namespace ET.Client.Pages.Route
             AuthenticatedDto = _authenticateUser.CreateAuthentication();
             if (AuthenticatedDto.IsAuthenticated && (AuthenticatedDto.Role == UserRole.Company || AuthenticatedDto.Role == UserRole.Admin))
             {
-                Buses = _busService.GetAll();
+                Locations = _locationServices.GetAll();
                 return Page();
             }
             else
             {
                 return RedirectToPage("/Company/Login");
-            }
-        }
-
-        public IActionResult OnPost()
-        {
-            if (ModelState.IsValid)
-            {
-                _routeService.Create(RouteDto);
-                return RedirectToPage("/Route/List");
-            }
-            else
-            {
-                return Page();
             }
         }
     }

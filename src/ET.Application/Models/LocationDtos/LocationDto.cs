@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ET.Application.Models.BusDtos
+namespace ET.Application.Models.LocationDtos
 {
-    public class BusDto
+    public class LocationDto
     {
         public string Name { get; set; }
-        public int Seats { get; set; }
-        public string CurrentLocation { get; set; }
     }
 }
