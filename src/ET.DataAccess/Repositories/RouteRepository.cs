@@ -1,4 +1,5 @@
 ﻿using ET.Core.Entities;
+using ET.DataAccess.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +18,13 @@ namespace ET.DataAccess.Repositories
 
         public bool Delete(Route route);
 
-        public List<Route> FilterByParams(string companyId, int page, int size, string sortBy, string startLocation, string endLocation, string startDate, string price, string bus, string status);
+        public List<Route> FilterByParams(RouteFilters routeFilters);
 
-        public int GetTotalByParams(string companyId, string startLocation, string endLocation, string startDate, string price, string bus, string status, int size);
+        public int GetTotalByParams(RouteFilters routeFilters);
 
         public List<Bus> GetAvailableBuses(DateTime startDate, DateTime endDate, string companyId, string startLocation);
+
+        public void UpdateStatusBasedOnDate();
+        public bool CheckIfBusAvailable(Guid id);
     }
 }

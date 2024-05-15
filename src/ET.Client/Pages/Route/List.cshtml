@@ -1,4 +1,156 @@
 ﻿@page
 @model ET.Client.Pages.Route.ListModel
+@inject ET.Application.Utilities.AuthenticateUser AuthenticateUser
 @{
+	ViewData["Title"] = "List of Routes";
+	var previous = Model.RoutePageDto.Page == 0 ? "disabled" : "";
+	var next = Model.RoutePageDto.Page + 1 == Model.RoutePageDto.TotalPages ? "disabled" : "";
+	var noPages = Model.RoutePageDto.TotalPages == 0 ? "disabled" : "";
+	var auth = AuthenticateUser.CreateAuthentication();
+	var jwtToken = auth.JwtToken;
+	var isAuthenticated = auth.IsAuthenticated;
+	var role = auth.Role;
+	var required = role == ET.Core.Enums.UserRole.User ? "required" : "";
 }
+
+<h1>Filter Routes: </h1>
+
+<form asp-page="/Route/List" method="get">
+	<div class="mb-3">
+		<label for="filterStartLocation" class="form-label">Start Location:</label>
+		<input type="text" id="filterStartLocation" name="startLocation" class="form-control" @required />
+	</div>
+	<div class="mb-3">
+		<label for="filterEndLocation" class="form-label">End Location:</label>
+		<input type="text" id="filterEndLocation" name="endLocation" class="form-control" @required />
+	</div>
+	<div class="mb-3">
+		<label for="filterStartDate" class="form-label">Start Date:</label>
+		<input type="date" id="filterStartDate" name="startDate" class="form-control" @required />
+	</div>
+	<div class="mb-3">
+		<label for="filterPrice" class="form-label">Price:</label>
+		<input type="number" id="filterPrice" name="price" class="form-control"/>
+	</div>
+	<div class="mb-3">
+		<label for="filterBusName" class="form-label">Company Name:</label>
+		<input type="text" id="filterCompany" name="company" class="form-control" />
+	</div>
+	<div class="mb-3">
+		<label for="filterSeatsNeeded" class="form-label">Seats Needed:</label>
+		<input type="number" id="filterSeatsNeeded" name="seatsNeeded" class="form-control" @required />
+	</div>
+	<button type="submit" class="btn btn-primary">Filter</button>
+</form>
+
+
+<h1>@ViewData["Title"]</h1>
+
+@if (Model.Routes != null && Model.Routes.Count > 0)
+{
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>Route</th>
+				<th>Date</th>
+				<th>Price</th>
+				<th>Reservations</th>
+				<th>Company</th>
+				@if (role == ET.Core.Enums.UserRole.Company)
+				{
+					<th>Status</th>
+					<th>Actions</th>
+				}
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var route in Model.Routes)
+			{
+				<tr>
+					<td>@route.StartLocation - @route.EndLocation</td>
+					<td>@route.StartDate - @route.EndDate</td>
+					<td>@route.Price</td>
+					<td>@route.CurrentReservations/@route.Bus.Seats</td>
+					<td>@route.Bus.Company.Name</td>
+					@if (role == ET.Core.Enums.UserRole.Company)
+					{
+						<td>@route.Status</td>
+						<td>
+
+							@if (route.Status == ET.Core.Enums.RouteStatus.Pending)
+							{
+								//<a asp-page="/Route/Edit" asp-route-id="@route.Id" type="submit" class="btn btn-outline-primary">Edit</a>
+								<a asp-page="/Route/Confirm" asp-route-id="@route.Id" type="submit" class="btn btn-outline-success">Confirm</a>
+								<a asp-page="/Route/Cancel" asp-route-id="@route.Id" type="submit" class="btn btn-outline-danger">Cancel</a>
+							}
+						</td>
+					}
+					@if (role == ET.Core.Enums.UserRole.User)
+					{
+						<td>
+							<a asp-page="/Ticket/Buy" asp-route-id="@route.Id" type="submit" class="btn btn-outline-primary">Buy</a>
+						</td>
+					}
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+else
+{
+	<p>No routes found.</p>
+}
+
+@* PAGINATION *@
+@functions {
+	IDictionary<string, string> GetRouteData(int num)
+	{
+		Dictionary<string, string> routeData = new Dictionary<string, string>();
+		if (Model.RoutePageDto.SearchParams != null)
+		{
+			foreach (var param in Model.RoutePageDto.SearchParams)
+			{
+				routeData[param.Key] = param.Value;
+			}
+		}
+		// Add pageIndex to the route data
+		routeData["pageIndex"] = num.ToString();
+		return routeData;
+	}
+}
+
+<div>
+	<ul class="pagination">
+		<li class="page-item">
+			<a asp-page="./List"
+			   asp-route-pageIndex="@(Model.RoutePageDto.Page - 1)"
+			   asp-all-route-data="GetRouteData(Model.RoutePageDto.Page - 1)"
+			   class="page-link btn @previous"
+			   role="button">
+				Previous
+			</a>
+		</li>
+		@for (var i = 0; i < Model.RoutePageDto.TotalPages; i++)
+		{
+			<li class="page-item @(i == Model.RoutePageDto.Page ? "active" : "")">
+				<a asp-page="./List"
+				   asp-route-pageIndex="@i"
+				   asp-all-route-data="GetRouteData(i)"
+				   class="page-link">
+					@(i + 1)
+				</a>
+			</li>
+		}
+		<li class="page-item">
+			<a asp-page="./List"
+			   asp-route-pageIndex="@(Model.RoutePageDto.Page + 1)"
+			   asp-all-route-data="GetRouteData(Model.RoutePageDto.Page + 1)"
+			   class="page-link btn @next @noPages"
+			   role="button">
+				Next
+			</a>
+		</li>
+	</ul>
+</div>
+
+

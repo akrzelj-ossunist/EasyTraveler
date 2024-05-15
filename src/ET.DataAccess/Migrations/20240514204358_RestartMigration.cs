@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ET.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class FixedTables : Migration
+    public partial class RestartMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -26,6 +26,18 @@ namespace ET.DataAccess.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Company", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Location",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Location", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -52,6 +64,7 @@ namespace ET.DataAccess.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     Seats = table.Column<int>(type: "integer", nullable: false),
                     IsAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    CurrentLocation = table.Column<string>(type: "text", nullable: true),
                     CompanyId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
@@ -71,11 +84,12 @@ namespace ET.DataAccess.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     StartLocation = table.Column<string>(type: "text", nullable: true),
                     EndLocation = table.Column<string>(type: "text", nullable: true),
-                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     BusId = table.Column<Guid>(type: "uuid", nullable: true),
                     CurrentReservations = table.Column<int>(type: "integer", nullable: false),
-                    status = table.Column<int>(type: "integer", nullable: false)
+                    Status = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -93,7 +107,7 @@ namespace ET.DataAccess.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Price = table.Column<int>(type: "integer", nullable: false),
-                    BoughtDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    BoughtDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: true),
                     RouteId = table.Column<Guid>(type: "uuid", nullable: true),
                     status = table.Column<int>(type: "integer", nullable: false)
@@ -137,6 +151,9 @@ namespace ET.DataAccess.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Location");
+
             migrationBuilder.DropTable(
                 name: "Ticket");
 

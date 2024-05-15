@@ -1,0 +1,37 @@
+﻿@page
+@model ET.Client.Pages.Ticket.BuyModel
+@{
+}
+
+<div class="container mt-5">
+	<div class="row">
+		<div class="col-md-6 offset-md-3">
+			<div class="card">
+				<div class="card-header">
+					<h3 class="text-center">Route Information</h3>
+				</div>
+				<div class="card-body">
+					<div class="form-group">
+						<label for="startLocation">Route:</label>
+						<input type="text" id="startLocation" class="form-control" readonly value="@Model.Route.StartLocation - @Model.Route.EndLocation">
+					</div>
+					<div class="form-group">
+						<label for="startDate">Date:</label>
+						<input type="text" id="startDate" class="form-control" readonly value="@Model.Route.StartDate - @Model.Route.EndDate">
+					</div>
+					<div class="form-group">
+						<label for="price">Price:</label>
+						<input type="text" id="price" class="form-control" readonly value="@Model.Route.Price">
+					</div>
+					<div class="form-group">
+						<label for="currentReservations">Free space:</label>
+						<input type="text" id="currentReservations" class="form-control" readonly value="@Model.Route.CurrentReservations/@Model.Route.Bus.Seats">
+					</div>
+					<div class="text-center m-4">
+						<button class="btn btn-primary" asp-page="/Ticket/Buy" asp-route-id="@Model.Route.Id">Confirm Buy</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

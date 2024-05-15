@@ -57,8 +57,7 @@ namespace ET.Application.Services.Impl
             if (bus == null) throw new NotFoundException("Bus with sent id doesnt exist!");
 
             bus.Name = busDto.Name;
-            //Later check if bus have ride in that case he cannot edit number of seats
-            bus.Seats = busDto.Seats;
+            if(bus.IsAvailable) bus.Seats = busDto.Seats;
 
             var editedBus = _busRepository.Update(bus);
 

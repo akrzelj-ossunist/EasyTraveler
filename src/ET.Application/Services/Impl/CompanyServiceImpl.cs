@@ -43,9 +43,14 @@ namespace ET.Application.Services.Impl
             var company = _companyRepository.FindById(id);
             if (company == null) throw new NotFoundException("Company with sent id doesnt exist!");
 
-            var editedUser = _companyRepository.Update(company);
+            company.Phone = companyRegisterDto.Phone;
+            company.Address = companyRegisterDto.Address;
+            company.City = companyRegisterDto.City;
+            company.Name = companyRegisterDto.Name;
 
-            return _companyMapper.CompanyToCompanyDto(editedUser);
+            var eidted = _companyRepository.Update(company);
+
+            return _companyMapper.CompanyToCompanyDto(eidted);
         }
 
         public CompanyLoginResponseDto CompanyLogin(LoginDto loginDto)

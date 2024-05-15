@@ -9,6 +9,7 @@ namespace ET.Core.Enums
     public enum RouteStatus
     {
         Pending,
+        Confirmed,
         InProgress,
         Done,
         Canceled,

@@ -1,5 +1,7 @@
 ﻿using ET.Core.Entities;
+using ET.DataAccess.Models;
 using ET.DataAccess.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace ET.DataAccess.Repositories.Impl
 {
@@ -20,21 +22,28 @@ namespace ET.DataAccess.Repositories.Impl
             return true;
         }
 
-        public List<Route> FilterByParams(string companyId, int page, int size, string sortBy, string startLocation, string endLocation, string startDate, string price, string bus, string status)
+        public List<Route> FilterByParams(RouteFilters routeFilters)
         {
-            DateTime startDateParsed = DateTime.Parse(startDate);
+            DateTime startDateParsed = !string.IsNullOrEmpty(routeFilters.StartDate) ? DateTime.Parse(routeFilters.StartDate).ToUniversalTime().AddDays(1) : DateTime.MinValue;
 
-            var query = from route in _context.Route
-                        where (string.IsNullOrEmpty(startLocation) || route.StartLocation.ToLower().Contains(startLocation.ToLower()) && startLocation.Length > 2)
-                        && (string.IsNullOrEmpty(companyId) || route.Bus.Company.Id.ToString().Equals(companyId))
-                        && (string.IsNullOrEmpty(endLocation) || route.EndLocation.ToLower().Contains(endLocation) && endLocation.Length > 2)
-                        && (string.IsNullOrEmpty(startDate) || startDateParsed == route.StartDate)
-                        && (string.IsNullOrEmpty(price) || route.Price.ToString().Equals(price))
-                        && (string.IsNullOrEmpty(bus) || route.Bus.Name.ToLower().Contains(bus) && bus.Length > 2)
-                        && (string.IsNullOrEmpty(status) || route.Status.ToString().ToLower().Equals(status))
+            var peopleRes = 0;
+            if (int.TryParse(routeFilters.People, out int peopleNum))
+            {
+                peopleRes = peopleNum;
+            }
+
+            var query = from route in _context.Route.Include(r => r.Bus).ThenInclude(b => b.Company)
+                        where (string.IsNullOrEmpty(routeFilters.StartLocation) || route.StartLocation.ToLower().Contains(routeFilters.StartLocation.ToLower()) && routeFilters.StartLocation.Length > 2)
+                            && (string.IsNullOrEmpty(routeFilters.CompanyId) || route.Bus.Company.Id.ToString().Equals(routeFilters.CompanyId))
+                            && (string.IsNullOrEmpty(routeFilters.EndLocation) || route.EndLocation.ToLower().Contains(routeFilters.EndLocation.ToLower()) && routeFilters.EndLocation.Length > 2)
+                            && (string.IsNullOrEmpty(routeFilters.StartDate) || startDateParsed.Date == route.StartDate.Date)
+                            && (string.IsNullOrEmpty(routeFilters.Price) || route.Price.ToString().Equals(routeFilters.Price))
+                            && (string.IsNullOrEmpty(routeFilters.Company) || route.Bus.Company.Name.ToLower().Contains(routeFilters.Company) && routeFilters.Company.Length > 2)
+                            && (string.IsNullOrEmpty(routeFilters.People) || (route.Bus.Seats - route.CurrentReservations) >= peopleRes)
+                            //&& (string.IsNullOrEmpty(routeFilters.Status) || route.Status.Equals(routeFilters.Status))
                         select route;
 
-            var result = SortList(sortBy, query).Skip(page * size).Take(size).ToList();
+            var result = SortList(routeFilters.SortBy, query).Skip(routeFilters.Page * routeFilters.Size).Take(routeFilters.Size).ToList();
             Console.WriteLine($"FilterByParams: Found {result.Count} routes matching the criteria.");
 
             return result;
@@ -42,40 +51,36 @@ namespace ET.DataAccess.Repositories.Impl
 
         public Route FindById(Guid id)
         {
-            return _context.Route.FirstOrDefault(route => route.Id == id);
+            return _context.Route.Include(r => r.Bus).FirstOrDefault(route => route.Id == id);
         }
 
-        public int GetTotalByParams(string companyId, string startLocation, string endLocation, string startDate, string price, string bus, string status, int size)
+        public int GetTotalByParams(RouteFilters routeFilters)
         {
-            DateTime startDateParsed = DateTime.Parse(startDate);
+            DateTime startDateParsed = !string.IsNullOrEmpty(routeFilters.StartDate) ? DateTime.Parse(routeFilters.StartDate).ToUniversalTime() : DateTime.MinValue;
 
             var query = from route in _context.Route
-                        where (string.IsNullOrEmpty(startLocation) || route.StartLocation.ToLower().Contains(startLocation.ToLower()) && startLocation.Length > 2)
-                        && (string.IsNullOrEmpty(companyId) || route.Bus.Company.Id.ToString().Equals(companyId))
-                        && (string.IsNullOrEmpty(endLocation) || route.EndLocation.ToLower().Contains(endLocation) && endLocation.Length > 2)
-                        && (string.IsNullOrEmpty(startDate) || startDateParsed == route.StartDate)
-                        && (string.IsNullOrEmpty(price) || route.Price.ToString().Equals(price))
-                        && (string.IsNullOrEmpty(bus) || route.Bus.Name.ToLower().Contains(bus) && bus.Length > 2)
-                        && (string.IsNullOrEmpty(status) || route.Status.ToString().ToLower().Equals(status))
-                        select bus;
+                        where (string.IsNullOrEmpty(routeFilters.StartLocation) || route.StartLocation.ToLower().Contains(routeFilters.StartLocation.ToLower()) && routeFilters.StartLocation.Length > 2)
+                        && (string.IsNullOrEmpty(routeFilters.CompanyId) || route.Bus.Company.Id.ToString().Equals(routeFilters.CompanyId))
+                        && (string.IsNullOrEmpty(routeFilters.EndLocation) || route.EndLocation.ToLower().Contains(routeFilters.EndLocation.ToLower()) && routeFilters.EndLocation.Length > 2)
+                        && (string.IsNullOrEmpty(routeFilters.StartDate) || startDateParsed.Date == route.StartDate.Date)
+                        && (string.IsNullOrEmpty(routeFilters.Price) || route.Price.ToString().Equals(routeFilters.Price))
+                        && (string.IsNullOrEmpty(routeFilters.Bus) || route.Bus.Name.ToLower().Contains(routeFilters.Bus.ToLower()) && routeFilters.Bus.Length > 2)
+                        && (string.IsNullOrEmpty(routeFilters.Status) || route.Status.ToString().ToLower().Equals(routeFilters.Status.ToLower()))
+                        select route;
 
-            return (int)Math.Ceiling((double)query.Count() / size);
+            return (int)Math.Ceiling((double)query.Count() / routeFilters.Size);
         }
 
         public Route Save(Route route)
         {
             if (route == null) throw new ArgumentNullException("Sent route argument cannot be null!");
 
-            // Retrieve the existing Bus entity if it exists
-            var existingBus = _context.Bus.Find(route.Bus.Id);
-            if (existingBus != null)
-            {
-                // Use the existing Bus entity
-                route.Bus = existingBus;
-            }
-
-            Console.WriteLine(route.Bus.Name + "READY FOR CREATION");
             _context.Route.Add(route);
+
+            var bus = _context.Bus.FirstOrDefault(bus => bus.Id == route.Bus.Id);
+            bus.IsAvailable = false;
+            _context.Bus.Update(bus);
+
             _context.SaveChanges();
 
             return route;
@@ -126,12 +131,44 @@ namespace ET.DataAccess.Repositories.Impl
                                 from route in _context.Route
                                 where route.Bus.Id == bus.Id
                                     && !(endDate < route.StartDate || startDate > route.EndDate)
+                                    && (route.Status != Core.Enums.RouteStatus.Canceled) // Exclude canceled routes
                                 select route
                             ).Any()
                             && (bus.CurrentLocation.ToLower().Equals(startLocation.ToLower()))
                         select bus;
 
             return query.ToList();
+        }
+
+        public void UpdateStatusBasedOnDate()
+        {
+            DateTime currentDate = DateTime.Now.ToUniversalTime();
+
+            // Get routes with date equal to the current date and status confirmed
+            var routesToUpdate = _context.Route
+                .Where(route => route.StartDate <= currentDate && route.Status == Core.Enums.RouteStatus.Confirmed)
+                .ToList();
+
+            // Update the status to inProgress
+            foreach (var route in routesToUpdate)
+            {
+                route.Status = Core.Enums.RouteStatus.InProgress;
+            }
+
+            // Save changes to the database
+            _context.SaveChanges();
+        }
+
+        public bool CheckIfBusAvailable(Guid id)
+        {
+            // Check if there's any route associated with the provided bus ID and has status confirmed or in progress
+            var routeWithBus = _context.Route.Any(r => r.Bus.Id == id &&
+                                                        (r.Status == Core.Enums.RouteStatus.Confirmed ||
+                                                         r.Status == Core.Enums.RouteStatus.InProgress));
+
+            // If there's a route with the bus ID and status confirmed or in progress, return false
+            // Otherwise, return true
+            return !routeWithBus;
         }
 
     }

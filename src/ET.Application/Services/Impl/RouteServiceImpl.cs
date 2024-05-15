@@ -7,9 +7,12 @@ using ET.Application.Models.RouteDtos;
 using ET.Application.Models.RouteDtos.Response;
 using ET.Application.Utilities;
 using ET.Core.Entities;
+using ET.Core.Enums;
+using ET.DataAccess.Models;
 using ET.DataAccess.Repositories;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -23,15 +26,15 @@ namespace ET.Application.Services.Impl
         private readonly RouteRepository _routeRepository;
         private readonly AuthenticateUser _authenticateUser;
         private readonly RouteMapper _routeMapper;
-        private readonly BusService _busService;
+        private readonly BusRepository _busRepository;
         public required AuthenticatedDto AuthenticatedDto { get; set; }
 
-        public RouteServiceImpl(RouteRepository routeRepository, AuthenticateUser authenticateUser, RouteMapper routeMapper, BusService busService)
+        public RouteServiceImpl(RouteRepository routeRepository, AuthenticateUser authenticateUser, RouteMapper routeMapper, BusRepository busRepository)
         {
             _routeRepository = routeRepository;
             _authenticateUser = authenticateUser;
             _routeMapper = routeMapper;
-            _busService = busService;
+            _busRepository = busRepository;
         }
 
         public RouteResponseDto Create(RouteDto routeDto)
@@ -41,38 +44,44 @@ namespace ET.Application.Services.Impl
             if (routeDto.StartLocation == routeDto.EndLocation) throw new Exception("Start location cannot be same as end location!");
             if (routeDto.StartDate >= routeDto.EndDate) throw new Exception("Start date cannot be before end date!");
 
-            var newData = _routeRepository.Save(_routeMapper.RouteDtoToRoute(routeDto));
+            var mappedData = _routeMapper.RouteDtoToRoute(routeDto);
+            mappedData.Bus = _busRepository.FindById(routeDto.BusId);
+            var newData = _routeRepository.Save(mappedData);
 
             return _routeMapper.RouteToRouteDto(newData);
         }
 
-        public bool Delete(Guid id)
+        public RouteResponseDto Cancel(Guid id)
         {
             var route = _routeRepository.FindById(id);
-            if (route == null) throw new NotFoundException("Route with sent id doesnt exist!");
+            route.Status = RouteStatus.Canceled;    
 
-            _routeRepository.Delete(route);
-
-            return true;
+            return _routeMapper.RouteToRouteDto(_routeRepository.Update(route));
         }
 
         public List<RouteResponseDto> Filter(RoutePageDto routePageDto, Dictionary<string, string> searchParams)
         {
             AuthenticatedDto = _authenticateUser.CreateAuthentication();
 
-            var companyId = AuthenticatedDto.Id.ToString();
-            var startLocation = searchParams.GetValueOrDefault("startLocation", "");
-            var endLocation = searchParams.GetValueOrDefault("endLocation", "");
-            var startDate = searchParams.GetValueOrDefault("startDate", "");
-            var price = searchParams.GetValueOrDefault("price", "");
-            var bus = searchParams.GetValueOrDefault("bus", "");
-            var status = searchParams.GetValueOrDefault("status", "");
-            var sortByParam = searchParams.TryGetValue("sortBy", out var value) ? value : "Id";
+            _routeRepository.UpdateStatusBasedOnDate();
 
-            if (AuthenticatedDto.Role != Core.Enums.UserRole.Company)
-                companyId = "";
-            
-            var routes = _routeRepository.FilterByParams(companyId, routePageDto.Page, routePageDto.Size, sortByParam, startLocation, endLocation, startDate, price, bus, status);
+            RouteFilters routeFilters = new RouteFilters
+            {
+                CompanyId = AuthenticatedDto.Role != UserRole.Company ? "" : AuthenticatedDto.Id.ToString(),
+                StartLocation = searchParams.GetValueOrDefault("startLocation", ""),
+                EndLocation = searchParams.GetValueOrDefault("endLocation", ""),
+                StartDate = searchParams.GetValueOrDefault("startDate", ""),
+                Price = searchParams.GetValueOrDefault("price", ""),
+                Company = searchParams.GetValueOrDefault("company", ""),
+                People = searchParams.GetValueOrDefault("seatsNeeded", ""),
+                Status = AuthenticatedDto.Role == UserRole.User ? "Confirmed" : "",
+                SortBy = searchParams.TryGetValue("sortBy", out var value) ? value : "Id",
+                Page = routePageDto.Page,
+                Size = routePageDto.Size
+            };
+
+            var routes = _routeRepository.FilterByParams(routeFilters);
+
             return routes.Select(_routeMapper.RouteToRouteDto).ToList();
         }
 
@@ -87,7 +96,22 @@ namespace ET.Application.Services.Impl
 
         public int GetTotal(Dictionary<string, string> searchParams)
         {
-            throw new NotImplementedException();
+            var validator = new ValidatePageableParams();
+            AuthenticatedDto = _authenticateUser.CreateAuthentication();
+
+            RouteFilters routeFilters = new RouteFilters
+            {
+                CompanyId = AuthenticatedDto.Role == UserRole.Company ? AuthenticatedDto.Id.ToString() : "",
+                StartLocation = searchParams.GetValueOrDefault("startLocation", ""),
+                EndLocation = searchParams.GetValueOrDefault("endLocation", ""),
+                StartDate = searchParams.GetValueOrDefault("startDate", ""),
+                Price = searchParams.GetValueOrDefault("price", ""),
+                Bus = searchParams.GetValueOrDefault("bus", ""),
+                Status = searchParams.GetValueOrDefault("status", ""),
+                Size = validator.Validate(searchParams.GetValueOrDefault("size", "5"), 5)
+            };
+
+            return _routeRepository.GetTotalByParams(routeFilters);
         }
 
         public RouteResponseDto Update(Guid id, RouteDto routeDto)
@@ -96,6 +120,12 @@ namespace ET.Application.Services.Impl
 
             var route = _routeRepository.FindById(id);
             if (route == null) throw new NotFoundException("Route with sent id doesnt exist!");
+
+            route.StartLocation = routeDto.StartLocation;
+            route.EndLocation = routeDto.EndLocation;
+            route.Price = routeDto.Price;
+            route.StartDate = routeDto.StartDate;
+            route.EndDate = routeDto.EndDate;
 
             var editedRoute = _routeRepository.Update(route);
 
@@ -106,13 +136,19 @@ namespace ET.Application.Services.Impl
         {
             AuthenticatedDto = _authenticateUser.CreateAuthentication();
 
-            var companyId = AuthenticatedDto.Id.ToString();
-            if (AuthenticatedDto.Role != Core.Enums.UserRole.Company)
-                companyId = "";
+            var companyId = AuthenticatedDto.Role != UserRole.Company ? "" : AuthenticatedDto.Id.ToString();
 
             if (startDate > endDate) throw new Exception("Start date cannot be after end date");
 
             return _routeRepository.GetAvailableBuses(startDate, endDate, companyId, starLocation);
+        }
+
+        public RouteResponseDto Confirm(Guid id)
+        {
+            var route = _routeRepository.FindById(id);
+            route.Status = RouteStatus.Confirmed;
+
+            return _routeMapper.RouteToRouteDto(_routeRepository.Update(route));
         }
     }
 }
