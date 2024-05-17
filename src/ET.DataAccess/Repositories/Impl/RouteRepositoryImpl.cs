@@ -1,4 +1,5 @@
 ﻿using ET.Core.Entities;
+using ET.Core.Enums;
 using ET.DataAccess.Models;
 using ET.DataAccess.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -25,12 +26,8 @@ namespace ET.DataAccess.Repositories.Impl
         public List<Route> FilterByParams(RouteFilters routeFilters)
         {
             DateTime startDateParsed = !string.IsNullOrEmpty(routeFilters.StartDate) ? DateTime.Parse(routeFilters.StartDate).ToUniversalTime().AddDays(1) : DateTime.MinValue;
-
-            var peopleRes = 0;
-            if (int.TryParse(routeFilters.People, out int peopleNum))
-            {
-                peopleRes = peopleNum;
-            }
+            routeFilters.Status = Enum.TryParse(routeFilters.Status, out RouteStatus status) ? status.ToString() : "";
+            var peopleRes = int.TryParse(routeFilters.People, out int peopleNum) ? peopleNum : 0;
 
             var query = from route in _context.Route.Include(r => r.Bus).ThenInclude(b => b.Company)
                         where (string.IsNullOrEmpty(routeFilters.StartLocation) || route.StartLocation.ToLower().Contains(routeFilters.StartLocation.ToLower()) && routeFilters.StartLocation.Length > 2)
@@ -40,7 +37,7 @@ namespace ET.DataAccess.Repositories.Impl
                             && (string.IsNullOrEmpty(routeFilters.Price) || route.Price.ToString().Equals(routeFilters.Price))
                             && (string.IsNullOrEmpty(routeFilters.Company) || route.Bus.Company.Name.ToLower().Contains(routeFilters.Company) && routeFilters.Company.Length > 2)
                             && (string.IsNullOrEmpty(routeFilters.People) || (route.Bus.Seats - route.CurrentReservations) >= peopleRes)
-                            //&& (string.IsNullOrEmpty(routeFilters.Status) || route.Status.Equals(routeFilters.Status))
+                            && (string.IsNullOrEmpty(routeFilters.Status) || route.Status.Equals(status))
                         select route;
 
             var result = SortList(routeFilters.SortBy, query).Skip(routeFilters.Page * routeFilters.Size).Take(routeFilters.Size).ToList();

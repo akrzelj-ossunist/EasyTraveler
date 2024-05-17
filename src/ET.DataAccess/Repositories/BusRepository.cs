@@ -17,5 +17,7 @@ namespace ET.DataAccess.Repositories
         public List<Bus> FilterByParams(string companyId, string name, string seats, string isAvailable, string company, int page, int size, string sortBy);
 
         public int GetTotalByParams(string companyId, string name, string seats, string isAvailable, string company, int size);
+
+        public void UpdateIsAvailable();
     }
 }

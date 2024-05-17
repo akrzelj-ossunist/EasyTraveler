@@ -68,8 +68,11 @@
 					<td>@(bus.IsAvailable ? "Yes" : "No")</td>
 					<td>@bus.Company.Name</td>
 					<td>
-						<a asp-page="/Bus/Edit" asp-route-id="@bus.Id" type="submit" class="btn btn-primary">Edit</a>
-						<!-- Add other actions if needed -->
+						<a asp-page="/Bus/Edit" asp-route-id="@bus.Id" type="submit" class="btn btn-outline-primary">Edit</a>
+						@if (bus.IsAvailable)
+						{
+							<a asp-page="/Bus/Delete" asp-route-id="@bus.Id" type="submit" class="btn btn-outline-danger">Delete</a>
+						}
 					</td>
 				</tr>
 			}

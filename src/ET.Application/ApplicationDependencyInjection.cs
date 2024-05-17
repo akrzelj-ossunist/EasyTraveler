@@ -30,5 +30,6 @@ public static class ApplicationDependencyInjection
         services.AddScoped<BusService, BusServiceImpl>();
         services.AddScoped<RouteService, RouteServiceImpl>();
         services.AddScoped<LocationRepository, LocationRepositoryImpl>();
+        services.AddScoped<TicketService, TicketServiceImpl>();
     }
 }

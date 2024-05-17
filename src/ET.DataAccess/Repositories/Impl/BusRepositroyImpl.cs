@@ -115,5 +115,20 @@ namespace ET.DataAccess.Repositories.Impl
             }
             return query;
         }
+
+        public void UpdateIsAvailable()
+        {
+            var routes = _context.Route.Where(route => route.Status != Core.Enums.RouteStatus.Confirmed && route.Status != Core.Enums.RouteStatus.InProgress);
+
+            var busesToUpdate = routes.Select(r => r.Bus).Distinct();
+
+            foreach (var bus in busesToUpdate)
+            {
+                bus.IsAvailable = false;
+                _context.Bus.Update(bus);
+            }
+
+            _context.SaveChanges();
+        }
     }
 }

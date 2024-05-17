@@ -28,18 +28,6 @@ namespace ET.Client.Pages.Route
             RoutePageDto.SearchParams = searchParams;
             RoutePageDto.Page = pageIndex ?? 0;
 
-            if (searchParams == null)
-            {
-                Console.WriteLine("The dictionary is null.");
-            }
-            else
-            {
-                foreach (var kvp in searchParams)
-                {
-                    Console.WriteLine($"Key: {kvp.Key}, Value: {kvp.Value}");
-                }
-            }
-
             if (searchParams != null && _authenticateUser.CreateAuthentication().Role == Core.Enums.UserRole.User) UserListShow = true;
 
             if(_authenticateUser.CreateAuthentication().IsAuthenticated)

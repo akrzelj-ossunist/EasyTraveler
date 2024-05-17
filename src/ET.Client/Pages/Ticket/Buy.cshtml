@@ -10,7 +10,9 @@
 				<div class="card-header">
 					<h3 class="text-center">Route Information</h3>
 				</div>
-				<div class="card-body">
+				<form method="post" class="card-body">
+					<input type="hidden" id="route" name="route" value="@Model.Route.Id">
+					<input type="hidden" id="price" name="price" value="@Model.Route.Price">
 					<div class="form-group">
 						<label for="startLocation">Route:</label>
 						<input type="text" id="startLocation" class="form-control" readonly value="@Model.Route.StartLocation - @Model.Route.EndLocation">
@@ -27,10 +29,12 @@
 						<label for="currentReservations">Free space:</label>
 						<input type="text" id="currentReservations" class="form-control" readonly value="@Model.Route.CurrentReservations/@Model.Route.Bus.Seats">
 					</div>
-					<div class="text-center m-4">
+					<form method="post" class="text-center m-4">
+						<label for="ticketNum">How many tickets you want:</label>
+						<input type="number" id="ticketNum" name="TicketNum" class="form-control w-100 d-flex d-inline-flex" value="1" required />
 						<button class="btn btn-primary" asp-page="/Ticket/Buy" asp-route-id="@Model.Route.Id">Confirm Buy</button>
-					</div>
-				</div>
+					</form>
+				</form>
 			</div>
 		</div>
 	</div>

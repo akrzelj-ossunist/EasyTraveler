@@ -35,6 +35,7 @@ namespace ET.Application.Services.Impl
             var bus = _busRepository.FindById(id);
             if (bus == null) throw new NotFoundException("Bus with sent id doesnt exist!");
 
+            if (!bus.IsAvailable) throw new Exception("Cannot delete bus because he is in use");
             _busRepository.Delete(bus);
 
             return true;
@@ -56,6 +57,7 @@ namespace ET.Application.Services.Impl
             var bus = _busRepository.FindById(id);
             if (bus == null) throw new NotFoundException("Bus with sent id doesnt exist!");
 
+            _busRepository.UpdateIsAvailable();
             bus.Name = busDto.Name;
             if(bus.IsAvailable) bus.Seats = busDto.Seats;
 
@@ -81,6 +83,7 @@ namespace ET.Application.Services.Impl
                 companyId = "";
             }
 
+            _busRepository.UpdateIsAvailable();
             var buses = _busRepository.FilterByParams(companyId, name, seats, isAvailable, company, busPageDto.Page, busPageDto.Size, sortByParam);
 
             return buses.Select(_busMapper.BusToBusDto).ToList();
